@@ -1,4 +1,5 @@
 import { Mail as MailIcon, MapPin as MapPinIcon, Phone as PhoneIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const quickLinks = [
   "Browse Jobs",
@@ -37,19 +38,13 @@ export const FooterSection = (): JSX.Element => {
       <div className="container mx-auto px-4 max-w-[1280px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div className="flex flex-col gap-6">
-            <div className="flex items-center">
+            <Link to="/" className="flex items-center">
               <img
-                className="h-12 w-auto"
-                alt="NextHire"
-                src="/logo.png"
-                onError={(e) => {
-                  const img = e.currentTarget;
-                  if (img.src.includes("/logo.png")) {
-                    img.src = "logo.png";
-                  }
-                }}
+                className="h-14 w-auto object-contain"
+                alt="NextHire Logo"
+                src="logo.png"
               />
-            </div>
+            </Link>
             <p className="[font-family:'Inter',Helvetica] font-normal text-gray-400 text-base tracking-[-0.50px] leading-6">
               Your gateway to amazing career opportunities. Connect with top
               employers and find your dream job today.

@@ -24,13 +24,15 @@ const socialProviders = [
 
 export const Login = (): JSX.Element => {
     const [showPassword, setShowPassword] = useState(false);
-    const [role, setRole] = useState<"candidate" | "hr">("candidate");
+    const [role, setRole] = useState<"candidate" | "hr" | "admin">("candidate");
     const navigate = useNavigate();
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (role === "hr") {
+        if (role === "admin") {
+            navigate("/admin/dashboard");
+        } else if (role === "hr") {
             navigate("/hr/dashboard");
         } else {
             navigate("/jobs");
@@ -73,12 +75,13 @@ export const Login = (): JSX.Element => {
                                     aria-label="Account type"
                                     value={role}
                                     onChange={(event) =>
-                                        setRole(event.target.value === "hr" ? "hr" : "candidate")
+                                        setRole(event.target.value as "candidate" | "hr" | "admin")
                                     }
                                     className="w-full h-14 rounded-xl border-gray-200 bg-white [font-family:'Poppins',Helvetica] font-normal text-base text-[#040404] px-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                                 >
                                     <option value="candidate">Candidate</option>
                                     <option value="hr">HR / Employer</option>
+                                    <option value="admin">Admin</option>
                                 </select>
                             </div>
 

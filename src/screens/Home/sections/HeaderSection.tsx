@@ -17,10 +17,10 @@ export const HeaderSection = (): JSX.Element => {
         <div className="flex items-center justify-between h-[72px]">
           {/* Logo Section - Left */}
           <div className="flex-shrink-0 flex items-center h-full">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center h-full">
               <img
-                className="h-10 w-auto object-contain"
-                alt="NextHire"
+                className="h-[48px] w-auto object-contain block"
+                alt="NextHire Logo"
                 src="logo.png"
                 loading="eager"
               />
