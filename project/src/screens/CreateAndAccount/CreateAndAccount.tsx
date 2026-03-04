@@ -136,6 +136,7 @@ export const CreateAndAccount = (): JSX.Element => {
         },
         {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
       );
 
@@ -167,7 +168,7 @@ export const CreateAndAccount = (): JSX.Element => {
       console.error("Registration error:", error);
 
       if (error.response) {
-        // Server responded with an error
+        // Server responded with an error (409 = email exists, 422 = validation error, etc)
         console.log("Error response data:", error.response.data);
         setApiMessage(
           error.response.data?.message || "Server error. Please try again later."

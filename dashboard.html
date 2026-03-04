@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard - NextHire</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <style>
+        .loading-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); }
+        .loading-spinner { color: white; font-size: 1.2rem; }
+        .header-notifications { position: relative; }
+        .notifications-dropdown { position: absolute; top: 100%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-top: 10px; z-index: 1000; display: none; }
+        .notifications-dropdown.show { display: block; }
+        .notification-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; gap: 12px; align-items: start; }
+        .notification-item:last-child { border-bottom: none; }
+        .notification-item.unread { background: #f0f7ff; }
+        .notification-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .notification-icon.blue { background: #e0f7ff; color: #007bff; }
+        .notification-icon.green { background: #e8f5e9; color: #28a745; }
+        .notification-icon.orange { background: #fff3e0; color: #ff9800; }
+        .notification-content { flex: 1; }
+        .notification-title { font-weight: 600; font-size: 0.9rem; color: #333; margin-bottom: 4px; }
+        .notification-message { font-size: 0.8rem; color: #666; }
+        .notification-time { font-size: 0.7rem; color: #999; margin-top: 4px; }
+        .notification-empty { padding: 30px; text-align: center; color: #999; }
+    </style>
+</head>
+<body>
+    <div id="root"><div class="loading-screen"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div></div>
+    <script type="text/babel">
+        const { useState, useEffect, createContext, useContext } = React;
+const API_URL = '/api';
+
+        const AuthContext = createContext(null);
+        function AuthProvider({ children }) {
+            const [user, setUser] = useState(null);
+            const [token, setToken] = useState(() => sessionStorage.getItem('token'));
+            const [loading, setLoading] = useState(true);
+            useEffect(() => { if (token) fetchUser(); else setLoading(false); }, []);
+            const fetchUser = async () => {
+                try {
+                    const res = await fetch(`${API_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (res.ok) { const data = await res.json(); setUser(data.user); } else { logout(); }
+                } catch (err) { console.error(err); }
+                setLoading(false);
+            };
+            const login = async (username, password) => {
+                const res = await fetch(`${API_URL}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+                const data = await res.json();
+                if (res.ok) { setToken(data.token); setUser(data.user); sessionStorage.setItem('token', data.token); return { success: true }; }
+                return { success: false, error: data.error };
+            };
+            const logout = () => { setToken(null); setUser(null); sessionStorage.removeItem('token'); };
+            return <AuthContext.Provider value={{ user, token, login, logout, loading }}>{children}</AuthContext.Provider>;
+        }
+        function useAuth() { return useContext(AuthContext); }
+
+        function Login() {
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+            const { login } = useAuth();
+            const handleSubmit = async (e) => {
+                e.preventDefault(); setLoading(true); setError('');
+                const result = await login(username, password);
+                if (!result.success) setError(result.error || 'Login failed');
+                setLoading(false);
+            };
+            return (
+                <div className="login-page">
+                    <div className="login-container">
+                        <div className="login-logo"><img src="Next Hire Logo.jpeg" alt="NextHire" /><h1>Next<span>Hire</span></h1><p style={{color:'#6c757d',marginTop:'10px'}}>HR Dashboard Login</p></div>
+                        {error && <div className="login-error"><i className="fa-solid fa-circle-exclamation"></i> {error}</div>}
+                        <form className="login-form" onSubmit={handleSubmit}>
+                            <div className="form-group"><label className="form-label">Username</label><input type="text" className="form-input" placeholder="Enter username" value={username} onChange={(e) => setUsername(e.target.value)} required /></div>
+                            <div className="form-group"><label className="form-label">Password</label><input type="password" className="form-input" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
+                            <button type="submit" className="login-btn" disabled={loading}>{loading ? <><i className="fa-solid fa-spinner fa-spin"></i> Signing in...</> : 'Sign In'}</button>
+                        </form>
+                        <div className="login-footer"><p>Demo: <strong>hradmin</strong> / <strong>hr123</strong></p></div>
+                    </div>
+                </div>
+            );
+        }
+
+        function HeaderNotifications() {
+            const [show, setShow] = useState(false);
+            const notifications = [
+                { id: 1, title: 'New Application', message: 'John Doe applied for Frontend Developer', time: '2 min ago', read: false, icon: 'blue', iconClass: 'fa-user-plus' },
+                { id: 2, title: 'Interview Scheduled', message: 'Interview with Jane Smith confirmed', time: '1 hour ago', read: false, icon: 'green', iconClass: 'fa-calendar-check' },
+                { id: 3, title: 'Test Completed', message: 'Mike Johnson completed skill test', time: '3 hours ago', read: true, icon: 'orange', iconClass: 'fa-clipboard-check' },
+                { id: 4, title: 'Status Update', message: 'Sarah Williams accepted offer', time: '1 day ago', read: true, icon: 'green', iconClass: 'fa-check-circle' }
+            ];
+            const unread = notifications.filter(n => !n.read).length;
+            return (
+                <div className="header-notifications">
+                    <button className="header-icon-btn" onClick={() => setShow(!show)}><i className="fa-solid fa-bell"></i>{unread > 0 && <span className="badge-count">{unread}</span>}</button>
+                    <div className={`notifications-dropdown ${show ? 'show' : ''}`}>
+                        <div style={{padding:'15px',borderBottom:'1px solid #eee',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                            <strong>Notifications</strong><button style={{border:'none',background:'none',color:'#007bff',cursor:'pointer'}}>Mark all read</button>
+                        </div>
+                        {notifications.map(n => (
+                            <div key={n.id} className={`notification-item ${!n.read ? 'unread' : ''}`}>
+                                <div className={`notification-icon ${n.icon}`}><i className={`fa-solid ${n.iconClass}`}></i></div>
+                                <div className="notification-content"><div className="notification-title">{n.title}</div><div className="notification-message">{n.message}</div><div className="notification-time">{n.time}</div></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function Header({ title, subtitle }) {
+            return (
+                <header className="header">
+                    <div className="header-left"><div><h1 className="header-title">{title}</h1><p className="header-subtitle">{subtitle}</p></div></div>
+                    <div className="header-right">
+                        <HeaderNotifications />
+                        <button className="header-icon-btn"><i className="fa-solid fa-gear"></i></button>
+                    </div>
+                </header>
+            );
+        }
+
+        function Sidebar({ currentPage, onNavigate }) {
+            const { user, logout } = useAuth();
+            const menuItems = [
+                { id: 'dashboard', icon: 'fa-gauge-high', label: 'Dashboard' },
+                { id: 'jobs', icon: 'fa-briefcase', label: 'Job Postings' },
+                { id: 'applications', icon: 'fa-file-alt', label: 'Applications' },
+                { id: 'screening', icon: 'fa-user-secret', label: 'Anonymous Screening' },
+                { id: 'tests', icon: 'fa-clipboard-check', label: 'Skill Tests' },
+                { id: 'interviews', icon: 'fa-calendar', label: 'Interviews' },
+                { id: 'reports', icon: 'fa-chart-bar', label: 'Reports' }
+            ];
+            return (
+                <aside className="sidebar">
+                    <div className="sidebar-header">
+                        <a href="#" className="logo" onClick={(e) => { e.preventDefault(); onNavigate('dashboard'); }}>
+                            <img src="Next Hire Logo.jpeg" alt="NextHire" style={{width:'40px',height:'40px',borderRadius:'8px',objectFit:'cover'}} />
+                            <div className="logo-text">Next<span>Hire</span></div>
+                        </a>
+                    </div>
+                    <nav className="sidebar-nav">
+                        <div className="nav-section">
+                            <div className="nav-section-title">Main Menu</div>
+                            {menuItems.map(item => (
+                                <a key={item.id} href="#" className={`nav-item ${currentPage === item.id ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); onNavigate(item.id); }}>
+                                    <i className={`fa-solid ${item.icon}`}></i><span>{item.label}</span>
+                                </a>
+                            ))}
+                        </div>
+                    </nav>
+                    <div className="sidebar-footer" style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+                        <div className="user-info" style={{marginBottom:'0'}}>
+                            <div className="user-avatar">{user?.name?.charAt(0) || 'HR'}</div>
+                            <div className="user-details"><div className="user-name">{user?.name || 'HR Admin'}</div><div className="user-role">{user?.role || 'Administrator'}</div></div>
+                        </div>
+                        <button className="btn btn-primary" onClick={logout} style={{width:'100%',justifyContent:'center',display:'flex',alignItems:'center',gap:'8px'}}>
+                            <i className="fa-solid fa-right-from-bracket"></i> Logout
+                        </button>
+                    </div>
+                </aside>
+            );
+        }
+
+        function Dashboard() {
+            const { data, loading } = useApi('/dashboard');
+            if (loading) return <div className="page-content"><div className="loading"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            const widgets = [
+                { id: 1, label: 'Active Job Openings', value: data?.activeJobs || 0, icon: 'fa-briefcase', color: 'primary' },
+                { id: 2, label: 'Total Applications', value: data?.totalApplications || 0, icon: 'fa-users', color: 'info' },
+                { id: 3, label: 'Shortlisted', value: data?.shortlistedCandidates || 0, icon: 'fa-check-circle', color: 'success' },
+                { id: 4, label: 'Rejected', value: data?.rejectedCandidates || 0, icon: 'fa-times-circle', color: 'danger' }
+            ];
+            return (
+                <div className="page-content fade-in">
+                    <div className="dashboard-widgets">
+                        {widgets.map(w => (
+                            <div key={w.id} className="widget">
+                                <div className="widget-header"><div className={`widget-icon ${w.color}`}><i className={`fa-solid ${w.icon}`}></i></div></div>
+                                <div className="widget-value">{w.value}</div><div className="widget-label">{w.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="recent-section">
+                        <h2 className="section-title">Recent Applications</h2>
+                        <div className="table-container">
+                            <table><thead><tr><th>ID</th><th>Job</th><th>Experience</th><th>Skill Match</th><th>Status</th></tr></thead>
+                                <tbody>{data?.recentApplications?.map(a => (<tr key={a.id}><td><strong>{a.id}</strong></td><td>{a.position}</td><td>{a.experience}</td><td><div className="skill-match-cell"><div className="progress" style={{width:'60px'}}><div className="progress-bar" style={{width:a.skillMatch}}></div></div>{a.skillMatch}</div></td><td><span className={`status-badge ${a.status.toLowerCase().replace(' ','-')}`}>{a.status}</span></td></tr>))}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function JobPostings() {
+            const { data, loading, refetch } = useApi('/jobs');
+            const { token } = useAuth();
+            const [showModal, setShowModal] = useState(false);
+            const [editingJob, setEditingJob] = useState(null);
+            const handleSave = async (e) => {
+                e.preventDefault();
+                const fd = new FormData(e.target);
+                const jobData = { title: fd.get('title'), department: fd.get('department'), location: fd.get('location'), type: fd.get('type'), status: fd.get('status'), requirements: fd.get('requirements'), skills: fd.get('skills').split(',').map(s => s.trim()), description: fd.get('description'), expirationDate: fd.get('expirationDate'), questions: [] };
+                const url = editingJob ? `${API_URL}/jobs/${editingJob.id}` : `${API_URL}/jobs`;
+                await fetch(url, { method: editingJob ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(jobData) });
+                setShowModal(false); refetch();
+            };
+            const handleDelete = async (id) => { if (confirm('Delete?')) { await fetch(`${API_URL}/jobs/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); refetch(); }};
+            const toggleStatus = async (id, status) => { await fetch(`${API_URL}/jobs/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status: status === 'Active' ? 'Inactive' : 'Active' }) }); refetch(); };
+            if (loading) return <div className="page-content"><div className="loading"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            return (
+                <div className="page-content fade-in">
+                    <div className="page-header-compact"><button className="btn btn-primary" onClick={() => { setEditingJob(null); setShowModal(true); }}><i className="fa-solid fa-plus"></i> Post Job</button></div>
+                    <div className="table-container">
+                        <table><thead><tr><th>Title</th><th>Department</th><th>Location</th><th>Type</th><th>Apps</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody>{data?.map(j => (<tr key={j.id}><td><strong>{j.title}</strong></td><td>{j.department}</td><td>{j.location}</td><td>{j.type}</td><td>{j.applications}</td><td><span className={`status-badge ${j.status.toLowerCase()}`}>{j.status}</span></td><td><div className="action-buttons"><button className="action-btn edit" onClick={() => { setEditingJob(j); setShowModal(true); }}><i className="fa-solid fa-pen"></i></button><button className="action-btn view" onClick={() => toggleStatus(j.id, j.status)}><i className={`fa-solid fa-toggle-${j.status === 'Active' ? 'on' : 'off'}`}></i></button><button className="action-btn delete" onClick={() => handleDelete(j.id)}><i className="fa-solid fa-xmark"></i></button></div></td></tr>))}</tbody>
+                        </table>
+                    </div>
+                    {showModal && <div className="modal-backdrop" onClick={() => setShowModal(false)}><div className="modal" onClick={e => e.stopPropagation()}><div className="modal-header"><h2>{editingJob ? 'Edit' : 'New'} Job</h2><button className="modal-close" onClick={() => setShowModal(false)}>×</button></div><form onSubmit={handleSave}><div className="modal-body"><div className="form-group"><label>Title</label><input name="title" className="form-input" defaultValue={editingJob?.title} required /></div><div className="form-row"><div className="form-group"><label>Department</label><select name="department" className="form-select" defaultValue={editingJob?.department}><option>IT</option><option>HR</option><option>Design</option></select></div><div className="form-group"><label>Location</label><input name="location" className="form-input" defaultValue={editingJob?.location} required /></div></div><div className="form-row"><div className="form-group"><label>Type</label><select name="type" className="form-select" defaultValue={editingJob?.type}><option>Full-Time</option><option>Part-Time</option></select></div><div className="form-group"><label>Status</label><select name="status" className="form-select" defaultValue={editingJob?.status || 'Active'}><option>Active</option><option>Inactive</option></select></div></div><div className="form-group"><label>Skills</label><input name="skills" className="form-input" defaultValue={editingJob?.skills?.join(', ')} placeholder="React, JavaScript" required /></div><div className="form-group"><label>Description</label><textarea name="description" className="form-textarea" rows="3" defaultValue={editingJob?.description}></textarea></div><div className="form-group"><label>Expires</label><input type="date" name="expirationDate" className="form-input" defaultValue={editingJob?.expirationDate} required /></div></div><div className="modal-footer"><button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button><button type="submit" className="btn btn-primary">Save</button></div></form></div></div>}
+                </div>
+            );
+        }
+
+        function Applications() {
+            const { data, loading, refetch } = useApi('/applications');
+            const { token } = useAuth();
+            const [search, setSearch] = useState('');
+            const [filter, setFilter] = useState('All');
+            const filtered = data?.filter(a => (search === '' || a.id.includes(search) || a.candidateName.toLowerCase().includes(search.toLowerCase())) && (filter === 'All' || a.status === filter)) || [];
+            const updateStatus = async (id, status) => { await fetch(`${API_URL}/applications/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status }) }); refetch(); };
+            if (loading) return <div className="page-content"><div className="loading"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            return (
+                <div className="page-content fade-in">
+                    <div className="filter-bar"><div className="filter-search"><i className="fa-solid fa-search"></i><input type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} /></div><select className="filter-select" value={filter} onChange={(e) => setFilter(e.target.value)}><option>All</option><option>Pending</option><option>Shortlisted</option><option>Rejected</option></select></div>
+                    <div className="table-container"><table><thead><tr><th>ID</th><th>Name</th><th>Position</th><th>Match</th><th>Status</th><th>Actions</th></tr></thead><tbody>{filtered.map(a => (<tr key={a.id}><td><strong>{a.id}</strong></td><td>{a.candidateName}</td><td>{a.position}</td><td>{a.skillMatch}</td><td><span className={`status-badge ${a.status.toLowerCase().replace(' ','-')}`}>{a.status}</span></td><td><div className="action-buttons"><button className="action-btn view"><i className="fa-solid fa-eye"></i></button><button className="action-btn edit" onClick={() => updateStatus(a.id, 'Shortlisted')}><i className="fa-solid fa-check"></i></button></div></td></tr>))}</tbody></table></div>
+                </div>
+            );
+        }
+
+        function AnonymousScreening() {
+            const { data, loading, refetch } = useApi('/screening');
+            const { token } = useAuth();
+            const reveal = async (id) => { await fetch(`${API_URL}/screening/${id}/reveal`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }); refetch(); };
+            if (loading) return <div className="page-content"><div className="loading"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            return (
+                <div className="page-content fade-in">
+                    <div className="alert alert-info"><i className="fa-solid fa-shield-halved"></i> <strong>Blind Screening:</strong> Identity hidden for unbiased evaluation.</div>
+                    <div className="screening-cards">{data?.map(c => (<div key={c.id} className="screening-card"><div className="screening-card-header"><div className="candidate-id">ID: {c.id}</div><div className="skill-match-display"><span>Match:</span> <span className="skill-match-value">{c.skillMatch}</span></div></div><div className="screening-card-body"><div className="info-row"><span>Experience:</span><span>{c.experience}</span></div><div className="info-row"><span>Education:</span><span>{c.education}</span></div><div className="info-row"><span>Test Score:</span><span>{c.testScore}</span></div></div><div className="screening-card-actions"><button className="btn btn-success btn-sm"><i className="fa-solid fa-check"></i> Shortlist</button><button className="btn btn-danger btn-sm"><i className="fa-solid fa-xmark"></i> Reject</button><button className="btn btn-outline btn-sm" onClick={() => reveal(c.id)}><i className={`fa-solid ${c.revealed ? 'fa-eye-slash' : 'fa-eye'}`}></i> {c.revealed ? ' Hide' : ' Reveal'}</button></div>{c.revealed && c.identity && <div className="revealed-identity"><i className="fa-solid fa-user"></i> Identity: <strong>{c.identity}</strong></div>}</div>))}</div>
+                </div>
+            );
+        }
+
+        function SkillTests() {
+            const { data, loading, refetch } = useApi('/tests');
+            const { token } = useAuth();
+            const [show, setShow] = useState(false);
+            const create = async (e) => { e.preventDefault(); const fd = new FormData(e.target); await fetch(`${API_URL}/tests`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ name: fd.get('name'), position: fd.get('position'), questions: parseInt(fd.get('questions')), status: 'Active' }) }); setShow(false); refetch(); };
+            if (loading) return <div className="page-content"><div className="loading"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            return (
+                <div className="page-content fade-in">
+                    <div className="page-header-compact"><button className="btn btn-primary" onClick={() => setShow(true)}><i className="fa-solid fa-plus"></i> Create Test</button></div>
+                    <div className="table-container"><table><thead><tr><th>Name</th><th>Position</th><th>Questions</th><th>Status</th></tr></thead><tbody>{data?.map(t => (<tr key={t.id}><td><strong>{t.name}</strong></td><td>{t.position}</td><td>{t.questions}</td><td><span className={`status-badge ${t.status.toLowerCase()}`}>{t.status}</span></td></tr>))}</tbody></table></div>
+                    {show && <div className="modal-backdrop" onClick={() => setShow(false)}><div className="modal" onClick={e => e.stopPropagation()}><div className="modal-header"><h2>New Test</h2><button className="modal-close" onClick={() => setShow(false)}>×</button></div><form onSubmit={create}><div className="modal-body"><div className="form-group"><label>Name</label><input name="name" className="form-input" required /></div><div className="form-group"><label>Position</label><select name="position" className="form-select"><option>Frontend</option><option>Backend</option></select></div><div className="form-group"><label>Questions</label><input type="number" name="questions" className="form-input" required /></div></div><div className="modal-footer"><button type="button" className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button><button type="submit" className="btn btn-primary">Create</button></div></form></div></div>}
+                </div>
+            );
+        }
+
+        function Interviews() {
+            const { data, loading, refetch } = useApi('/interviews');
+            const { token } = useAuth();
+            const [show, setShow] = useState(false);
+            const create = async (e) => { e.preventDefault(); const fd = new FormData(e.target); await fetch(`${API_URL}/interviews`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ candidateId: fd.get('candidateId'), candidateName: fd.get('candidateName'), position: fd.get('position'), date: fd.get('date'), time: fd.get('time'), status: 'Scheduled' }) }); setShow(false); refetch(); };
+            if (loading) return <div className="page-content"><div className="loading"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            return (
+                <div className="page-content fade-in">
+                    <div className="page-header-compact"><button className="btn btn-primary" onClick={() => setShow(true)}><i className="fa-solid fa-plus"></i> Schedule</button></div>
+                    <div className="table-container"><table><thead><tr><th>Candidate</th><th>Position</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>{data?.map(i => (<tr key={i.id}><td><strong>{i.candidateName}</strong><br/><small>{i.candidateId}</small></td><td>{i.position}</td><td>{i.date}</td><td>{i.time}</td><td><span className={`status-badge ${i.status.toLowerCase()}`}>{i.status}</span></td></tr>))}</tbody></table></div>
+                    {show && <div className="modal-backdrop" onClick={() => setShow(false)}><div className="modal" onClick={e => e.stopPropagation()}><div className="modal-header"><h2>Schedule</h2><button className="modal-close" onClick={() => setShow(false)}>×</button></div><form onSubmit={create}><div className="modal-body"><div className="form-group"><label>Candidate ID</label><input name="candidateId" className="form-input" required /></div><div className="form-group"><label>Name</label><input name="candidateName" className="form-input" required /></div><div className="form-group"><label>Position</label><input name="position" className="form-input" required /></div><div className="form-row"><div className="form-group"><label>Date</label><input type="date" name="date" className="form-input" required /></div><div className="form-group"><label>Time</label><input type="time" name="time" className="form-input" required /></div></div></div><div className="modal-footer"><button type="button" className="btn btn-secondary" onClick={() => setShow(false)}>Cancel</button><button type="submit" className="btn btn-primary">Schedule</button></div></form></div></div>}
+                </div>
+            );
+        }
+
+        function Reports() {
+            const { data, loading } = useApi('/reports');
+            const exportCSV = () => { const csv = 'ID,Name,Position,Status\n' + (data?.applications?.map(a => `${a.id},${a.candidateName},${a.position},${a.status}`).join('\n') || ''); const b = new Blob([csv], {type:'text/csv'}); const u = URL.createObjectURL(b); const l = document.createElement('a'); l.href = u; l.download = 'report.csv'; l.click(); };
+            if (loading) return <div className="page-content"><div className="loading"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            return (
+                <div className="page-content fade-in">
+                    <div className="reports-grid">
+                        <div className="report-card"><h3>Top Jobs</h3><div className="chart-bars" style={{height:'150px'}}>{data?.topJobs?.map((j,i) => <div key={i} className="chart-bar" style={{height:`${(j.count/45)*100}%`}} data-value={j.count}></div>)}</div></div>
+                        <div className="report-card"><h3>Skill Match</h3><div className="report-stat-large"><div className="stat-value-large">{data?.avgSkillMatch}</div></div></div>
+                        <div className="report-card"><h3>Shortlist</h3><div className="report-stat-large"><div className="stat-value-large">{data?.shortlistRatio}</div></div></div>
+                        <div className="report-card"><h3>Conversion</h3><div className="report-stat-large"><div className="stat-value-large">{data?.conversionRate}</div></div></div>
+                    </div>
+                </div>
+            );
+        }
+
+        function Footer() {
+            return (
+                <footer className="footer"><div className="footer-container"><div className="footer-grid"><div className="footer-brand"><div className="footer-logo"><img src="Next Hire Logo.jpeg" style={{width:'42px',borderRadius:'10px'}} /><span className="footer-logo-text">NextHire</span></div><p>HR Dashboard</p></div><div className="footer-column"><h4>Quick</h4><ul><li><a href="#">Jobs</a></li><li><a href="#">Apps</a></li></ul></div><div className="footer-column"><h4>Support</h4><ul><li><a href="#">Help</a></li><li><a href="#">Privacy</a></li></ul></div><div className="footer-column"><h4>Contact</h4><ul><li><a href="#">hr@nexthire.com</a></li></ul></div></div><div className="footer-bottom"><p>© 2024 NextHire</p></div></div></footer>
+            );
+        }
+
+        function useApi(endpoint) {
+            const { token } = useAuth();
+            const [data, setData] = useState(null);
+            const [loading, setLoading] = useState(true);
+            useEffect(() => {
+                if (token) fetch(`${API_URL}${endpoint}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()).then(d => { setData(d); setLoading(false); });
+            }, [token, endpoint]);
+            return { data, loading, refetch: () => setLoading(true) };
+        }
+
+        function App() {
+            const { user, loading } = useAuth();
+            const [page, setPage] = useState('dashboard');
+            const pages = { dashboard: { title: 'HR Dashboard', subtitle: 'Overview' }, jobs: { title: 'Job Postings', subtitle: 'Manage' }, applications: { title: 'Applications', subtitle: 'Candidates' }, screening: { title: 'Screening', subtitle: 'Blind hiring' }, tests: { title: 'Skill Tests', subtitle: 'Assessments' }, interviews: { title: 'Interviews', subtitle: 'Schedule' }, reports: { title: 'Reports', subtitle: 'Analytics' } };
+            if (loading) return <div className="loading-screen"><div className="loading-spinner"><i className="fa-solid fa-spinner fa-spin"></i></div></div>;
+            if (!user) return <Login />;
+            return (
+                <div className="app-container">
+                    <Sidebar currentPage={page} onNavigate={setPage} />
+                    <main className="main-content">
+                        <Header {...pages[page]} />
+                        {page === 'dashboard' && <Dashboard />}
+                        {page === 'jobs' && <JobPostings />}
+                        {page === 'applications' && <Applications />}
+                        {page === 'screening' && <AnonymousScreening />}
+                        {page === 'tests' && <SkillTests />}
+                        {page === 'interviews' && <Interviews />}
+                        {page === 'reports' && <Reports />}
+                        <Footer />
+                    </main>
+                </div>
+            );
+        }
+        ReactDOM.createRoot(document.getElementById('root')).render(<AuthProvider><App /></AuthProvider>);
+    </script>
+</body>
+</html>
+

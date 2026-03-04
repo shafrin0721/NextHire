@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Test - NextHire</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 260px; background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%); color: white; padding: 20px; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 700; margin-bottom: 40px; }
+        .sidebar-logo img { width: 40px; height: 40px; border-radius: 10px; }
+        .sidebar-logo span { color: #007BFF; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 8px; }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 10px; transition: all 0.3s; }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(0,123,255,0.2); color: #007BFF; }
+        .main-content { flex: 1; margin-left: 260px; padding: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { color: #333; font-size: 1.8rem; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card h2 { color: #333; font-size: 1.2rem; margin-bottom: 20px; }
+        .test-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 2px solid #eee; border-radius: 10px; margin-bottom: 15px; transition: all 0.3s; cursor: pointer; }
+        .test-card:hover { border-color: #007BFF; background: #f0f7ff; }
+        .test-info h3 { color: #333; margin-bottom: 5px; }
+        .test-info p { color: #666; font-size: 0.9rem; }
+        .test-meta { text-align: right; }
+        .test-meta .questions { color: #666; font-size: 0.9rem; }
+        .test-meta .time { color: #007BFF; font-weight: 600; }
+        .start-btn { background: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; }
+        .start-btn:hover { background: #0056b3; }
+        .question-container { display: none; max-width: 800px; margin: 0 auto; }
+        .question-container.active { display: block; }
+        .question-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .question-number { color: #007BFF; font-weight: 600; margin-bottom: 15px; }
+        .question-text { font-size: 1.1rem; color: #333; margin-bottom: 25px; }
+        .options { display: flex; flex-direction: column; gap: 15px; }
+        .option { padding: 15px 20px; border: 2px solid #eee; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        .option:hover { border-color: #007BFF; }
+        .option.selected { border-color: #007BFF; background: #e3f2fd; }
+        .option input { margin-right: 10px; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 25px; }
+        .nav-btn { padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .nav-btn.prev { background: #e0e0e0; color: #333; border: none; }
+        .nav-btn.next { background: #007BFF; color: white; border: none; }
+        .nav-btn.submit { background: #28a745; color: white; border: none; }
+        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 20px; }
+        .progress-fill { height: 100%; background: #007BFF; border-radius: 3px; transition: width 0.3s; }
+        .result-container { display: none; text-align: center; padding: 40px; }
+        .result-container.show { display: block; }
+        .result-score { font-size: 4rem; font-weight: 700; color: #007BFF; }
+        .result-label { color: #666; font-size: 1.2rem; margin-bottom: 20px; }
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container" id="testList">
+        <aside class="sidebar">
+            <div class="sidebar-logo"><img src="Next Hire Logo.jpeg" alt="NextHire" /> Next<span>Hire</span></div>
+            <ul class="sidebar-menu">
+                <li><a href="candidate-dashboard.html"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <div class="header"><h1>Skill Tests</h1></div>
+            <div class="card">
+                <h2>Available Tests</h2>
+                <div id="testsContainer"></div>
+        </main>
+    </div>
+    
+    <div class="question-container" id="questionContainer">
+        <main class="main-content">
+            <div class="card">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div>
+                <div class="question-number" id="questionNumber"></div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="nav-buttons">
+                    <button class="nav-btn prev" id="prevBtn" onclick="prevQuestion()">Previous</button>
+                    <button class="nav-btn next" id="nextBtn" onclick="nextQuestion()">Next</button>
+                </div>
+        </main>
+    </div>
+    
+    <div class="result-container" id="resultContainer">
+        <div class="card">
+            <h2 style="text-align:center">Test Completed!</h2>
+            <div class="result-score" id="resultScore">0%</div>
+            <div class="result-label">Your Score</div>
+            <button class="start-btn" onclick="location.reload()">Back to Tests</button>
+        </div>
+
+    <script>
+        const tests = [
+            { id: 1, name: 'Frontend Technical Test', position: 'Frontend Developer', questions: 5, time: '15 min' },
+            { id: 2, name: 'JavaScript Basics', position: 'Web Developer', questions: 10, time: '20 min' },
+            { id: 3, name: 'React Fundamentals', position: 'React Developer', questions: 8, time: '15 min' }
+        ];
+        
+        const questions = [
+            { q: 'What is React?', options: ['A database', 'A JavaScript library', 'A CSS framework', 'A server'], answer: 1 },
+            { q: 'What is useState?', options: ['A hook', 'A variable', 'A function', 'A component'], answer: 0 },
+            { q: 'What is JSX?', options: ['JavaScript XML', 'Java Syntax', 'JSON format', 'CSS syntax'], answer: 0 },
+            { q: 'What is a component?', options: ['A function', 'A reusable UI piece', 'A variable', 'A style'], answer: 1 },
+            { q: 'What is props?', options: ['Data passed to components', 'A state', 'A hook', 'A style'], answer: 0 }
+        ];
+        
+        let currentQuestion = 0;
+        let answers = [];
+        
+        document.getElementById('testsContainer').innerHTML = tests.map(t => 
+            '<div class="test-card" onclick="startTest()"><div class="test-info"><h3>' + t.name + '</h3><p>' + t.position + '</p></div><div class="test-meta"><div class="questions">' + t.questions + ' Questions</div><div class="time">' + t.time + '</div></div>'
+        ).join('');
+        
+        function startTest() {
+            document.getElementById('testList').style.display = 'none';
+            document.getElementById('questionContainer').classList.add('active');
+            renderQuestion();
+        }
+        
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = 'Question ' + (currentQuestion + 1) + ' of ' + questions.length;
+            document.getElementById('questionText').textContent = q.q;
+            document.getElementById('progressFill').style.width = ((currentQuestion + 1) / questions.length * 100) + '%';
+            
+            let optionsHTML = '';
+            q.options.forEach((opt, i) => {
+                optionsHTML += '<div class="option" onclick="selectOption(' + i + ')"><input type="radio" name="option" ' + (answers[currentQuestion] === i ? 'checked' : '') + '> ' + opt + '</div>';
+            });
+            document.getElementById('optionsContainer').innerHTML = optionsHTML;
+            
+            document.getElementById('prevBtn').style.display = currentQuestion === 0 ? 'none' : 'inline-block';
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? 'Submit' : 'Next';
+        }
+        
+        function selectOption(index) {
+            answers[currentQuestion] = index;
+            renderQuestion();
+        }
+        
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                submitTest();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+        
+        function submitTest() {
+            let score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (answers[i] === questions[i].answer) score++;
+            }
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('questionContainer').classList.remove('active');
+            document.getElementById('resultContainer').classList.add('show');
+            document.getElementById('resultScore').textContent = percentage + '%';
+        }
+    </script>
+</body>
+</html>
