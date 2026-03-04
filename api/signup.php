@@ -37,8 +37,8 @@ $hashed = password_hash($password, PASSWORD_BCRYPT);
 
 // insert
 $ins = $pdo->prepare("
-  INSERT INTO users (full_name, email, password, phone, role, profile_photo, is_active)
-  VALUES (:full_name, :email, :password, NULL, 'candidate', NULL, 1)
+  INSERT INTO users (full_name, email, password, phone, role, profile_photo, is_active, created_at)
+  VALUES (:full_name, :email, :password, NULL, 'candidate', NULL, 1, NOW())
 ");
 
 $ins->execute([
