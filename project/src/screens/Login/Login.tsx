@@ -1,6 +1,7 @@
-import { Eye as EyeIcon, EyeOff as EyeOffIcon } from "lucide-react";
+import { Eye as EyeIcon, EyeOff as EyeOffIcon, AlertCircle, CheckCircle } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -21,7 +22,71 @@ const socialProviders = [
 ];
 
 export const Login = (): JSX.Element => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+
+    // Basic validation
+    if (!email.trim() || !password) {
+      setError("Please enter both email and password");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost/NextHire/api/login.php",
+        {
+          email: email.trim(),
+          password,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      console.log("Login Response:", response.data);
+
+      if (response.data.success || response.data.status === "success") {
+        setSuccess(true);
+        setError("");
+        
+        // Store user data if needed
+        if (response.data.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+
+        // Redirect to home or dashboard
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      } else {
+        setError(response.data.message || "Login failed");
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      if (err.response) {
+        setError(err.response.data?.message || "Invalid credentials");
+      } else if (err.request) {
+        setError("Cannot connect to server. Please check your connection.");
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-white overflow-hidden w-full flex flex-col min-h-screen">
@@ -58,7 +123,27 @@ export const Login = (): JSX.Element => {
             </p>
           </div>
 
-          <form className="flex flex-col items-start gap-8 w-full">
+          <form className="flex flex-col items-start gap-8 w-full" onSubmit={handleSubmit}>
+            {/* Error Message */}
+            {error && (
+              <div className="w-full p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                <p className="[font-family:'Poppins',Helvetica] font-normal text-red-800 text-sm">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            {/* Success Message */}
+            {success && (
+              <div className="w-full p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <p className="[font-family:'Poppins',Helvetica] font-normal text-green-800 text-sm">
+                  Login successful! Redirecting...
+                </p>
+              </div>
+            )}
+
             <div className="flex flex-col w-full items-start gap-1">
               <Label
                 htmlFor="email"
@@ -71,6 +156,9 @@ export const Login = (): JSX.Element => {
                 type="email"
                 placeholder="Enter your email address"
                 className="w-full h-14 rounded-xl border-black [font-family:'Poppins',Helvetica] font-normal text-base placeholder:text-[#30303099]"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -100,6 +188,9 @@ export const Login = (): JSX.Element => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 className="w-full h-14 rounded-xl border-black [font-family:'Poppins',Helvetica] font-normal text-base placeholder:text-[#00000099]"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -124,8 +215,9 @@ export const Login = (): JSX.Element => {
             <Button
               type="submit"
               className="w-full h-16 bg-[#111111] rounded-[40px] text-[#fff9f9] text-[22px] [font-family:'Poppins',Helvetica] font-medium tracking-[0] leading-[normal] hover:bg-[#333333]"
+              disabled={loading}
             >
-              Log in
+              {loading ? "Logging in..." : "Log in"}
             </Button>
           </form>
 
