@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Applications - NextHire</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const applications = [
+            { id: 'C-1023', position: 'Frontend Developer', experience: '3 Years', skillMatch: '85%', testScore: '82%', status: 'Pending' },
+            { id: 'C-1045', position: 'Backend Developer', experience: '5 Years', skillMatch: '78%', testScore: '75%', status: 'Shortlisted' },
+            { id: 'C-1067', position: 'Full Stack Developer', experience: '4 Years', skillMatch: '82%', testScore: '79%', status: 'Interview Scheduled' },
+            { id: 'C-1089', position: 'DevOps Engineer', experience: '6 Years', skillMatch: '91%', testScore: '88%', status: 'Selected' },
+            { id: 'C-1102', position: 'Data Analyst', experience: '2 Years', skillMatch: '72%', testScore: '70%', status: 'Rejected' }
+        ];
+
+        function Sidebar() {
+            const menuItems = [
+                { id: 'dashboard', icon: 'fa-gauge-high', label: 'Dashboard', file: 'dashboard.html' },
+                { id: 'jobs', icon: 'fa-briefcase', label: 'Job Postings', file: 'job-postings.html' },
+                { id: 'applications', icon: 'fa-file-alt', label: 'Applications', file: 'applications.html' },
+                { id: 'screening', icon: 'fa-user-secret', label: 'Anonymous Screening', file: 'anonymous-screening.html' },
+{ id: 'tests', icon: 'fa-clipboard-check', label: 'Skill Tests', file: 'skill-tests.html' },
+                { id: 'interviews', icon: 'fa-calendar', label: 'Interviews', file: 'interviews.html' },
+                { id: 'reports', icon: 'fa-chart-bar', label: 'Reports', file: 'reports.html' }
+            ];
+
+            return (
+                <aside className="sidebar">
+                    <div className="sidebar-header">
+<a href="dashboard.html" className="logo">
+                            <img src="Next Hire Logo.jpeg" alt="NextHire" style={{width:'40px',height:'40px',borderRadius:'8px',objectFit:'cover'}} />
+                            <div className="logo-text">Next<span>Hire</span></div>
+                        </a>
+                    </div>
+                    <nav className="sidebar-nav">
+                        <div className="nav-section">
+                            <div className="nav-section-title">Main Menu</div>
+                            {menuItems.map(item => (
+                                <a key={item.id} href={item.file} className={`nav-item ${item.id === 'applications' ? 'active' : ''}`}>
+                                    <i className={`fa-solid ${item.icon}`}></i>
+                                    <span>{item.label}</span>
+                                </a>
+                            ))}
+                        </div>
+                    </nav>
+                    <div className="sidebar-footer">
+                        <div className="user-info">
+                            <div className="user-avatar">HR</div>
+                            <div className="user-details">
+                                <div className="user-name">HR Admin</div>
+                                <div className="user-role">Administrator</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            );
+        }
+
+        function Header() {
+            return (
+                <header className="header">
+                    <div className="header-left">
+                        <div>
+                            <h1 className="header-title">Candidate Applications</h1>
+                            <p className="header-subtitle">Review and manage submitted job applications.</p>
+                        </div>
+                    </div>
+                    <div className="header-right">
+                        <button className="header-icon-btn"><i className="fa-solid fa-bell"></i><span className="badge-count">3</span></button>
+                        <button className="header-icon-btn"><i className="fa-solid fa-gear"></i></button>
+                    </div>
+                </header>
+            );
+        }
+
+        function Applications() {
+            const [searchTerm, setSearchTerm] = useState('');
+
+            return (
+                <div className="page-content fade-in">
+                    <div className="filter-bar">
+                        <div className="filter-search">
+                            <i className="fa-solid fa-search"></i>
+                            <input type="text" placeholder="Search by Candidate ID..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        </div>
+                        <div className="filter-group">
+                            <label className="filter-label">Filter by Job Position</label>
+                            <select className="filter-select">
+                                <option>All Positions</option>
+                                <option>Frontend Developer</option>
+                                <option>Backend Developer</option>
+                            </select>
+                        </div>
+                        <div className="filter-group">
+                            <label className="filter-label">Filter by Status</label>
+                            <select className="filter-select">
+                                <option>All Status</option>
+                                <option>Pending</option>
+                                <option>Shortlisted</option>
+                                <option>Rejected</option>
+                                <option>Interview Scheduled</option>
+                                <option>Selected</option>
+                            </select>
+                        </div>
+                        <div className="filter-group">
+                            <label className="filter-label">Filter by Skill Match</label>
+                            <select className="filter-select">
+                                <option>All</option>
+                                <option>80%+</option>
+                                <option>60-80%</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Candidate ID</th>
+                                    <th>Applied Position</th>
+                                    <th>Experience</th>
+                                    <th>Skill Match %</th>
+                                    <th>Test Score</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {applications.map(app => (
+                                    <tr key={app.id}>
+                                        <td><strong>{app.id}</strong></td>
+                                        <td>{app.position}</td>
+                                        <td>{app.experience}</td>
+                                        <td><div className="skill-match-cell"><div className="progress" style={{ width: '60px' }}><div className="progress-bar" style={{ width: app.skillMatch }}></div></div>{app.skillMatch}</div></td>
+                                        <td>{app.testScore}</td>
+                                        <td><span className={`status-badge ${app.status.toLowerCase().replace(' ', '-')}`}>{app.status}</span></td>
+                                        <td>
+                                            <div className="action-buttons">
+                                                <button className="action-btn view"><i className="fa-solid fa-eye"></i></button>
+                                                <button className="action-btn download"><i className="fa-solid fa-download"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+
+function App() {
+            return (
+                <div className="app-container">
+                    <Sidebar />
+                    <main className="main-content">
+                        <Header />
+                        <Applications />
+                        <Footer />
+                    </main>
+                </div>
+            );
+        }
+
+        function Footer() {
+            return (
+                <footer className="footer">
+                    <div className="footer-container">
+                        <div className="footer-grid">
+                            <div className="footer-brand">
+                                <div className="footer-logo">
+                                    <img src="Next Hire Logo.jpeg" alt="NextHire Logo" className="footer-logo-img" style={{width:'42px',height:'42px',borderRadius:'10px',objectFit:'cover'}} />
+                                    <span className="footer-logo-text">NextHire</span>
+                                </div>
+                                <p>Your gateway to amazing career opportunities.</p>
+                            </div>
+                            <div className="footer-column"><h4>Quick Links</h4><ul><li><a href="#">Browse Jobs</a></li><li><a href="#">Companies</a></li><li><a href="#">About Us</a></li></ul></div>
+                            <div className="footer-column"><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+                            <div className="footer-column"><h4>Contact</h4><ul><li><a href="mailto:hello@nexthire.com">hello@nexthire.com</a></li><li><a href="#">+1 (555) 123-4567</a></li></ul></div>
+                        </div>
+                        <div className="footer-bottom"><p>© 2024 NextHire. All rights reserved.</p></div>
+                    </div>
+                </footer>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
