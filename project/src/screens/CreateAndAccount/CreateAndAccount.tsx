@@ -128,7 +128,7 @@ export const CreateAndAccount = (): JSX.Element => {
 
     try {
       const response = await axios.post(
-        "http://localhost/nexthire-api/register.php",
+        "http://localhost/NextHire/api/signup.php",
         {
           fullName: fullName.trim(),
           email: email.trim(),
