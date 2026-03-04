@@ -1,0 +1,2 @@
+export { HrDashboard } from "./HrDashboard";
+
