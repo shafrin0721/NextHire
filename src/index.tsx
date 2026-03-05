@@ -8,7 +8,7 @@ import { Jobs } from "./pages/Jobs";
 import { JobDetails } from "./pages/JobDetails";
 import { Apply } from "./pages/Apply";
 import { Assessment } from "./dashboard/Assessment";
-import { HrDashboard } from "./dashboard/Hr";
+import { HrDashboard, HrJobs, HrCandidates, HrInterviews, HrReportsAnalytics, HrSettings } from "./dashboard/Hr";
 import { Contact } from "./pages/Contact";
 import { CreateAndAccount } from "./pages/CreateAndAccount";
 import { Login } from "./pages/Login";
@@ -17,7 +17,13 @@ import { Logout } from "./pages/Logout";
 import { NotFound } from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-createRoot(document.getElementById("app") as HTMLElement).render(
+const rootElement = document.getElementById("app");
+
+if (!rootElement) {
+  throw new Error('Failed to find the root element');
+}
+
+createRoot(rootElement).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
@@ -31,6 +37,11 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           element={<Assessment />}
         />
         <Route path="/hr/dashboard" element={<ProtectedRoute><HrDashboard /></ProtectedRoute>} />
+        <Route path="/hr/jobs" element={<ProtectedRoute><HrJobs /></ProtectedRoute>} />
+        <Route path="/hr/candidates" element={<ProtectedRoute><HrCandidates /></ProtectedRoute>} />
+        <Route path="/hr/interviews" element={<ProtectedRoute><HrInterviews /></ProtectedRoute>} />
+        <Route path="/hr/reports" element={<ProtectedRoute><HrReportsAnalytics /></ProtectedRoute>} />
+        <Route path="/hr/settings" element={<ProtectedRoute><HrSettings /></ProtectedRoute>} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />

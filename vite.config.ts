@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         jsxRuntime: "automatic",
       }),
     ],
-    base: "./",
+    base: "/",
     define: reactAppProcessEnv,
     resolve: {
       alias: {
