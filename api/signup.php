@@ -19,8 +19,9 @@ error_log("Input data: " . json_encode($data));
 $fullName = trim((string)($data["fullName"] ?? ""));
 $email    = trim((string)($data["email"] ?? ""));
 $password = (string)($data["password"] ?? "");
+$role     = trim((string)($data["role"] ?? "candidate"));
 
-error_log("Parsed - Name: $fullName, Email: $email");
+error_log("Parsed - Name: $fullName, Email: $email, Role: $role");
 
 if ($fullName === "") {
   error_log("Error: Full name is empty");
@@ -33,6 +34,10 @@ if ($email === "" || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 if ($password === "" || strlen($password) < 6) {
   error_log("Error: Password too short");
   json_response(422, ["status" => "error", "message" => "Password must be at least 6 characters"]);
+}
+if (!in_array($role, ["candidate", "hr", "admin"], true)) {
+  error_log("Error: Invalid role - $role");
+  json_response(422, ["status" => "error", "message" => "Invalid role selected"]);
 }
 
 // email exists
@@ -53,13 +58,15 @@ $hashed = password_hash($password, PASSWORD_BCRYPT);
 try {
   $ins = $pdo->prepare("
     INSERT INTO users (full_name, email, password, phone, role, profile_photo, is_active, created_at)
-    VALUES (:full_name, :email, :password, NULL, 'candidate', NULL, 1, NOW())
+    VALUES (:full_name, :email, :password, :phone, :role, NULL, 1, NOW())
   ");
 
   $ins->execute([
     ":full_name" => $fullName,
     ":email" => $email,
     ":password" => $hashed,
+    ":phone" => (string)($data["phone"] ?? ""),
+    ":role" => $role,
   ]);
   
   $userId = $pdo->lastInsertId();

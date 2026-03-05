@@ -1,23 +1,31 @@
 import {
   BarChart3Icon,
   BriefcaseIcon,
-  FileTextIcon,
   LineChartIcon,
   SettingsIcon,
   UsersIcon,
+  CalendarIcon,
+  LogOutIcon,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Footer } from "../../components/Footer";
 
 const sidebarItems = [
-  { label: "Dashboard", Icon: BarChart3Icon, active: true },
-  { label: "Jobs", Icon: BriefcaseIcon, active: false },
-  { label: "Candidates", Icon: UsersIcon, active: false },
-  { label: "Interviews", Icon: FileTextIcon, active: false },
-  { label: "Reports", Icon: LineChartIcon, active: false },
-  { label: "Settings", Icon: SettingsIcon, active: false },
+  { label: "Dashboard", Icon: BarChart3Icon, path: "/hr/dashboard" },
+  { label: "Jobs", Icon: BriefcaseIcon, path: "/hr/jobs" },
+  { label: "Candidates", Icon: UsersIcon, path: "/hr/candidates" },
+  { label: "Interviews", Icon: CalendarIcon, path: "/hr/interviews" },
+  { label: "Reports", Icon: LineChartIcon, path: "/hr/reports" },
+  { label: "Settings", Icon: SettingsIcon, path: "/hr/settings" },
+  { label: "Logout", Icon: LogOutIcon, path: "/logout" },
 ];
 
 export const HrDashboard = (): JSX.Element => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <header className="h-16 bg-white border-b border-gray-100 flex items-center">
@@ -43,24 +51,28 @@ export const HrDashboard = (): JSX.Element => {
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 py-6 flex gap-6">
         <aside className="hidden md:flex flex-col w-56 rounded-2xl bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-gray-100 py-4">
           <nav className="flex flex-col gap-1">
-            {sidebarItems.map(({ label, Icon, active }) => (
-              <button
-                key={label}
-                type="button"
-                className={`flex items-center gap-3 px-4 py-2.5 text-sm [font-family:'Inter',Helvetica] text-left ${
-                  active
-                    ? "bg-blue-50 text-blue-700 font-medium border-r-4 border-blue-600"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`}
-              >
-                <Icon
-                  className={`w-4 h-4 ${
-                    active ? "text-blue-600" : "text-gray-400"
+            {sidebarItems.map(({ label, Icon, path }) => {
+              const isActive = path === "/hr/dashboard";
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => handleNavigation(path)}
+                  className={`flex items-center gap-3 px-4 py-2.5 text-sm [font-family:'Inter',Helvetica] text-left ${
+                    isActive
+                      ? "bg-blue-50 text-blue-700 font-medium border-r-4 border-blue-600"
+                      : "text-gray-600 hover:bg-gray-50"
                   }`}
-                />
-                <span>{label}</span>
-              </button>
-            ))}
+                >
+                  <Icon
+                    className={`w-4 h-4 ${
+                      isActive ? "text-blue-600" : "text-gray-400"
+                    }`}
+                  />
+                  <span>{label}</span>
+                </button>
+              );
+            })}
           </nav>
         </aside>
 

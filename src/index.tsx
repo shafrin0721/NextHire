@@ -2,20 +2,26 @@ import "./styles/tailwind.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+// Import pages - testing imports one by one
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
 import { Jobs } from "./pages/Jobs";
 import { JobDetails } from "./pages/JobDetails";
 import { Apply } from "./pages/Apply";
-import { Assessment } from "./dashboard/Assessment";
-import { HrDashboard, HrJobs, HrCandidates, HrInterviews, HrReportsAnalytics, HrSettings } from "./dashboard/Hr";
 import { Contact } from "./pages/Contact";
 import { CreateAndAccount } from "./pages/CreateAndAccount";
 import { Login } from "./pages/Login";
-import { AdminDashboard, ReportsAnalytics, JobApplications, SkillTests, Candidates, Interviews, AdminJobs, AdminSettings } from "./dashboard/Admin";
 import { Logout } from "./pages/Logout";
 import { NotFound } from "./pages/NotFound";
+
+// Import components
 import { ProtectedRoute } from "./components/ProtectedRoute";
+
+// Import dashboards
+import { Assessment } from "./dashboard/Assessment";
+import { HrDashboard, HrJobs, HrCandidates, HrInterviews, HrReportsAnalytics, HrSettings } from "./dashboard/Hr";
+import { AdminDashboard, ReportsAnalytics, JobApplications, SkillTests, Candidates, Interviews, AdminJobs, AdminSettings } from "./dashboard/Admin";
 
 const rootElement = document.getElementById("app");
 
@@ -32,10 +38,7 @@ createRoot(rootElement).render(
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/job-details/:id" element={<JobDetails />} />
         <Route path="/apply/:id" element={<Apply />} />
-        <Route
-          path="/assessment/frontend-developer"
-          element={<Assessment />}
-        />
+        <Route path="/assessment/frontend-developer" element={<Assessment />} />
         <Route path="/hr/dashboard" element={<ProtectedRoute><HrDashboard /></ProtectedRoute>} />
         <Route path="/hr/jobs" element={<ProtectedRoute><HrJobs /></ProtectedRoute>} />
         <Route path="/hr/candidates" element={<ProtectedRoute><HrCandidates /></ProtectedRoute>} />

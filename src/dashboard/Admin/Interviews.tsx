@@ -746,4 +746,3 @@ export const Interviews = (): JSX.Element => {
         </div>
     );
 };
-export default Interviews;

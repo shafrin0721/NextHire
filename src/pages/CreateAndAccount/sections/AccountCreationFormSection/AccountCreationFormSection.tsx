@@ -36,11 +36,14 @@ const socialProviders = [
 export const AccountCreationFormSection = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [role, setRole] = useState<"candidate" | "hr" | "admin">("candidate");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{
     fullName?: string;
     email?: string;
@@ -50,8 +53,10 @@ export const AccountCreationFormSection = (): JSX.Element => {
   }>({});
   const navigate = useNavigate();
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    // Validate inputs
     const fullNameError = validateRequired(fullName);
     const emailError = validateEmail(email);
     const phoneError = validatePhone(phone);
@@ -68,10 +73,45 @@ export const AccountCreationFormSection = (): JSX.Element => {
         password: passwordError ?? undefined,
         confirmPassword: confirmError ?? undefined,
       });
+      setApiError(null);
       return;
     }
+    
     setErrors({});
-    navigate("/login");
+    setApiError(null);
+    setIsLoading(true);
+
+    try {
+      // Call signup API
+      const response = await fetch("http://localhost/NextHire/api/signup.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          email,
+          password,
+          phone,
+          role,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Show success message and redirect to login
+        alert("Account created successfully! Please log in.");
+        navigate("/login");
+      } else {
+        // Show error message
+        setApiError(data.message || "Registration failed. Please try again.");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setApiError("Unable to connect to server. Please ensure XAMPP Apache is running.");
+      setIsLoading(false);
+    }
   };
 
   const handleSocialClick = (href: string) => {
@@ -97,6 +137,26 @@ export const AccountCreationFormSection = (): JSX.Element => {
           className="flex flex-col items-start gap-6 md:gap-10 w-full"
           onSubmit={handleSubmit}
         >
+          <div className="flex flex-col w-full items-start gap-1">
+            <Label
+              htmlFor="role"
+              className="[font-family:'Poppins',Helvetica] font-normal text-[#040404] text-base tracking-[0] leading-[normal]"
+            >
+              Sign up as
+            </Label>
+            <select
+              id="role"
+              aria-label="Account type"
+              value={role}
+              onChange={(e) => setRole(e.target.value as "candidate" | "hr" | "admin")}
+              className="w-full h-14 rounded-xl border border-gray-300 bg-white [font-family:'Poppins',Helvetica] font-normal text-base text-[#040404] px-4 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            >
+              <option value="candidate">Candidate</option>
+              <option value="hr">HR / Employer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
           <div className="flex flex-col w-full items-start gap-1">
             <Label
               htmlFor="full-name"
@@ -234,11 +294,18 @@ export const AccountCreationFormSection = (): JSX.Element => {
               </button>
             </p>
 
+            {apiError && (
+              <div className="w-full p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg text-center">
+                {apiError}
+              </div>
+            )}
+
             <Button
               type="submit"
-              className="w-full h-14 md:h-16 bg-[#111111] rounded-[40px] text-[#fff9f9] text-lg md:text-[22px] [font-family:'Poppins',Helvetica] font-medium tracking-[0] leading-[normal] hover:bg-[#333333] hover:opacity-95 transition-all"
+              disabled={isLoading}
+              className="w-full h-14 md:h-16 bg-[#111111] rounded-[40px] text-[#fff9f9] text-lg md:text-[22px] [font-family:'Poppins',Helvetica] font-medium tracking-[0] leading-[normal] hover:bg-[#333333] hover:opacity-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
           </div>
         </form>

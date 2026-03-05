@@ -21,6 +21,10 @@ export default defineConfig(({ mode }) => {
     ],
     base: "/",
     define: reactAppProcessEnv,
+    server: {
+      port: 5174,
+      strictPort: true,
+    },
     resolve: {
       alias: {
         react: "react",

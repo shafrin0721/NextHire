@@ -17,7 +17,7 @@
     BarChart3,
     Target,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -73,9 +73,7 @@ const recentApps = Array.from({ length: 30 }, (_, i) => ({
 const sidebarItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/hr/dashboard" },
     { label: "Jobs", icon: Briefcase, path: "/hr/jobs" },
-    { label: "Applications", icon: FileText, path: "/hr/applications" },
     { label: "Candidates", icon: Users, path: "/hr/candidates" },
-    { label: "Skill Tests", icon: FileCheck, path: "/hr/skill-tests" },
     { label: "Interviews", icon: Calendar, path: "/hr/interviews" },
     { label: "Analytics", icon: BarChart3, path: "/hr/reports" },
     { label: "Settings", icon: Settings, path: "/hr/settings" },
@@ -104,6 +102,7 @@ const getDynamicMetrics = (job: string, range: string) => {
 
 export const HrReportsAnalytics = (): JSX.Element => {
     const navigate = useNavigate();
+    const location = useLocation();
     // State for filters and search
     const [dateRange, setDateRange] = useState('Last 7 Days');
     const [jobPosition, setJobPosition] = useState('All Positions');
@@ -289,19 +288,22 @@ export const HrReportsAnalytics = (): JSX.Element => {
                 </div>
 
                 <nav className="flex-1 px-4 py-8 flex flex-col gap-1">
-                    {sidebarItems.map((item) => (
-                        <button
-                            key={item.label}
-                            onClick={() => navigate(item.path)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${item.label === "Analytics"
-                                ? "bg-blue-50 text-blue-600 shadow-sm"
-                                : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                                }`}
-                        >
-                            <item.icon className={`w-5 h-5 ${item.label === "Analytics" ? "text-blue-600" : "text-gray-400"}`} />
-                            {item.label}
-                        </button>
-                    ))}
+                    {sidebarItems.map((item) => {
+                        const isActive = location.pathname === item.path;
+                        return (
+                            <button
+                                key={item.label}
+                                onClick={() => navigate(item.path)}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive
+                                    ? "bg-blue-50 text-blue-600 shadow-sm"
+                                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                    }`}
+                            >
+                                <item.icon className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-400"}`} />
+                                {item.label}
+                            </button>
+                        );
+                    })}
                 </nav>
             </aside>
 

@@ -35,14 +35,12 @@ import {
     Link as LinkIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const sidebarItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/hr/dashboard" },
     { label: "Jobs", icon: Briefcase, path: "/hr/jobs" },
-    { label: "Applications", icon: FileText, path: "/hr/applications" },
     { label: "Candidates", icon: Users, path: "/hr/candidates" },
-    { label: "Skill Tests", icon: FileCheck, path: "/hr/skill-tests" },
     { label: "Interviews", icon: Calendar, path: "/hr/interviews" },
     { label: "Analytics", icon: BarChart3, path: "/hr/reports" },
     { label: "Settings", icon: Settings, path: "/hr/settings" },
@@ -155,7 +153,7 @@ const initialCandidates = Array.from({ length: 30 }, (_, i) => ({
 
 export const HrCandidates = (): JSX.Element => {
     const navigate = useNavigate();
-    const [activeItem, setActiveItem] = useState("Candidates");
+    const location = useLocation();
     const [candidates, setCandidates] = useState(initialCandidates);
 
     // Filtering States
@@ -189,8 +187,7 @@ export const HrCandidates = (): JSX.Element => {
     const paginatedCandidates = filteredCandidates.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / itemsPerPage));
 
-    const handleNavigation = (path: string, label: string) => {
-        setActiveItem(label);
+    const handleNavigation = (path: string) => {
         navigate(path);
     };
 
@@ -298,19 +295,22 @@ export const HrCandidates = (): JSX.Element => {
                 {/* Sidebar */}
                 <aside className="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col sticky top-16 h-[calc(100vh-64px)] overflow-y-auto">
                     <nav className="flex-1 px-4 py-6 flex flex-col gap-1">
-                        {sidebarItems.map((item) => (
-                            <button
-                                key={item.label}
-                                onClick={() => handleNavigation(item.path, item.label)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeItem === item.label
-                                    ? "bg-blue-50 text-blue-600 shadow-sm"
-                                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                                    }`}
-                            >
-                                <item.icon className={`w-5 h-5 ${activeItem === item.label ? "text-blue-600" : "text-gray-400"}`} />
-                                {item.label}
-                            </button>
-                        ))}
+                        {sidebarItems.map((item) => {
+                            const isActive = location.pathname === item.path;
+                            return (
+                                <button
+                                    key={item.label}
+                                    onClick={() => handleNavigation(item.path)}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${isActive
+                                        ? "bg-blue-50 text-blue-600 shadow-sm"
+                                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                                        }`}
+                                >
+                                    <item.icon className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-400"}`} />
+                                    {item.label}
+                                </button>
+                            );
+                        })}
                     </nav>
                 </aside>
 
