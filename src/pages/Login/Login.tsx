@@ -10,7 +10,7 @@ import { Label } from "../../components/ui/label";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { validateEmail, validatePassword } from "../../utils/validation";
-import { setAuthSession, loginAdmin } from "../../utils/auth";
+import { loginUser } from "../../utils/auth";
 
 const GOOGLE_LOGIN_URL = "https://accounts.google.com";
 const FACEBOOK_LOGIN_URL = "https://www.facebook.com/login";
@@ -29,10 +29,13 @@ export const Login = (): JSX.Element => {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
     const [authError, setAuthError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        
+        // Validate input
         const emailError = validateEmail(email);
         const passwordError = validatePassword(password);
         if (emailError || passwordError) {
@@ -42,26 +45,37 @@ export const Login = (): JSX.Element => {
         }
 
         setErrors({});
+        setAuthError(null);
+        setIsLoading(true);
 
-        if (role === "admin") {
-            const result = loginAdmin(email, password);
+        try {
+            // Call backend API to authenticate
+            const result = await loginUser(email, password);
+            
             if (!result.success) {
                 setAuthError(result.message);
+                setIsLoading(false);
                 return;
             }
-            setAuthError(null);
-            navigate("/admin/dashboard");
-            return;
-        }
 
-        // Non-admin users still get a simple session flag
-        setAuthSession();
-        setAuthError(null);
+            // Check if user role matches selected role
+            if (result.user && result.user.role !== role) {
+                setAuthError(`This account is not registered as ${role}. Please select "${result.user.role}" from the dropdown.`);
+                setIsLoading(false);
+                return;
+            }
 
-        if (role === "hr") {
-            navigate("/hr/dashboard");
-        } else {
-            navigate("/jobs");
+            // Redirect based on user role
+            if (result.user?.role === "admin") {
+                navigate("/admin/dashboard");
+            } else if (result.user?.role === "hr") {
+                navigate("/hr/dashboard");
+            } else {
+                navigate("/jobs");
+            }
+        } catch (error) {
+            setAuthError("An unexpected error occurred. Please try again.");
+            setIsLoading(false);
         }
     };
 
@@ -165,16 +179,17 @@ export const Login = (): JSX.Element => {
                             </div>
 
                             {authError && (
-                                <p className="w-full text-sm text-red-600 text-center">
+                                <div className="w-full p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg text-center">
                                     {authError}
-                                </p>
+                                </div>
                             )}
 
                             <Button
                                 type="submit"
-                                className="w-full h-14 bg-blue-600 rounded-xl text-white text-lg [font-family:'Poppins',Helvetica] font-semibold hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
+                                disabled={isLoading}
+                                className="w-full h-14 bg-blue-600 rounded-xl text-white text-lg [font-family:'Poppins',Helvetica] font-semibold hover:bg-blue-700 transition-all shadow-md shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Log in
+                                {isLoading ? "Logging in..." : "Log in"}
                             </Button>
                         </form>
 

@@ -1,76 +1,106 @@
 /**
- * Auth helpers for NextHire: session clear, persist, and check.
- * Used for logout and protected routes.
+ * Auth helpers for NextHire: session management and API communication.
+ * Used for login, logout, and protected routes.
  */
 
 const AUTH_KEY = "nexthire_auth";
-const TOKEN_KEY = "nexthire_token";
+const USER_KEY = "nexthire_user";
+const API_BASE = "http://localhost/NextHire/api";
 
-// Simple static admin credentials for prototype / frontend-only auth.
-// In a real app these would be validated on the backend.
-const ADMIN_EMAIL = "admin@nexthire.com";
-const ADMIN_PASSWORD = "Admin@123";
-const ADMIN_TOKEN = "nexthire_admin_token";
+export interface User {
+  id: number;
+  fullName: string;
+  email: string;
+  role: "candidate" | "admin" | "hr";
+}
 
-/** Clear all auth-related data from localStorage, sessionStorage, and cookies */
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+}
+
+/** Clear all auth-related data from localStorage and sessionStorage */
 export function clearAuthSession(): void {
   try {
     localStorage.removeItem(AUTH_KEY);
-    localStorage.removeItem(TOKEN_KEY);
-    // Clear any other common auth keys
-    const authKeys = ["token", "user", "auth", "accessToken", "refreshToken"];
-    authKeys.forEach((key) => {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    });
+    localStorage.removeItem(USER_KEY);
     sessionStorage.clear();
-    // Clear cookies (all that could be auth-related)
-    document.cookie.split(";").forEach((c) => {
-      const name = c.split("=")[0].trim();
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-    });
   } catch {
     // ignore
   }
 }
 
-/** Mark non-admin user as logged in (call after successful non-admin login) */
-export function setAuthSession(): void {
+/** Persist user data after successful login */
+export function setAuthSession(user: User): void {
   try {
     localStorage.setItem(AUTH_KEY, "1");
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
   } catch {
     // ignore
+  }
+}
+
+/** Get the currently logged in user */
+export function getCurrentUser(): User | null {
+  try {
+    const userData = localStorage.getItem(USER_KEY);
+    if (userData) {
+      return JSON.parse(userData) as User;
+    }
+    return null;
+  } catch {
+    return null;
   }
 }
 
 /**
- * Validate admin credentials and persist an auth token when successful.
- * Returns true when the provided email/password match the admin account.
+ * Login user via backend API
+ * Validates credentials against the database
  */
-export function loginAdmin(
+export async function loginUser(
   email: string,
   password: string,
-): { success: true } | { success: false; message: string } {
+): Promise<LoginResponse> {
   try {
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedAdminEmail = ADMIN_EMAIL.toLowerCase();
+    const response = await fetch(`${API_BASE}/login.php`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: "include", // Important for session cookies
+    });
 
-    if (normalizedEmail === normalizedAdminEmail && password === ADMIN_PASSWORD) {
-      localStorage.setItem(AUTH_KEY, "1");
-      localStorage.setItem(TOKEN_KEY, ADMIN_TOKEN);
-      return { success: true };
+    const data = await response.json();
+
+    if (data.success && data.user) {
+      // Store user data in localStorage
+      setAuthSession(data.user);
+      return {
+        success: true,
+        message: data.message || "Login successful",
+        user: data.user,
+      };
     }
 
-    return { success: false, message: "Invalid email or password" };
-  } catch {
-    return { success: false, message: "Invalid email or password" };
+    return {
+      success: false,
+      message: data.message || "Login failed",
+    };
+  } catch (error) {
+    console.error("Login error:", error);
+    return {
+      success: false,
+      message: "Unable to connect to server. Please ensure XAMPP Apache is running.",
+    };
   }
 }
 
 /** Return true if the user is considered logged in */
 export function isAuthenticated(): boolean {
   try {
-    return localStorage.getItem(AUTH_KEY) === "1" || !!localStorage.getItem(TOKEN_KEY);
+    return localStorage.getItem(AUTH_KEY) === "1" && !!localStorage.getItem(USER_KEY);
   } catch {
     return false;
   }
