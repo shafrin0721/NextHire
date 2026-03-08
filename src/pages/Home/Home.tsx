@@ -5,6 +5,7 @@ import { Navbar } from "../../components/Navbar";
 import { HeroSection } from "./sections/HeroSection";
 import { ImpactSection } from "./sections/ImpactSection";
 import { TestimonialsSection } from "./sections/TestimonialsSection";
+import { Chatbot } from "../../components/Chatbot";
 
 export const Home = (): JSX.Element => {
   return (
@@ -16,6 +17,7 @@ export const Home = (): JSX.Element => {
       <ImpactSection />
       <TestimonialsSection />
       <Footer />
+      <Chatbot />
     </div>
   );
 };
