@@ -609,7 +609,7 @@ export const HrReportsAnalytics = (): JSX.Element => {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-gray-900 text-[15px]">{app.name}</p>
-                                                    <p className="text-xs text-gray-400 font-medium">{app.email}</p>
+                                                    <a href={`mailto:${app.email}?subject=Regarding Your Application`} className="text-xs text-gray-400 font-medium hover:text-blue-600 transition-colors block cursor-pointer">{app.email}</a>
                                                 </div>
                                             </div>
                                         </td>

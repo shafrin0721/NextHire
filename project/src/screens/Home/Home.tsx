@@ -567,7 +567,7 @@ export const Home = (): JSX.Element => {
               <h4>Contact Us</h4>
               <ul>
                 <li>
-                  <a href="mailto:hello@nexthire.com">hello@nexthire.com</a>
+                  <a href="mailto:hello@nexthire.com?subject=General Inquiry">hello@nexthire.com</a>
                 </li>
                 <li>
                   <a href="#">+1 (555) 123-4567</a>

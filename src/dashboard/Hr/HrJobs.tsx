@@ -883,12 +883,12 @@ export const HrJobs = (): JSX.Element => {
                         <div className="space-y-6">
                             <h4 className="text-white font-bold text-lg mb-6 uppercase tracking-widest text-[12px]">Contact Info</h4>
                             <div className="space-y-4 text-sm font-bold">
-                                <div className="flex items-center gap-4 group cursor-pointer">
+                                <a href="mailto:hello@NextHire.com?subject=Support Request" className="flex items-center gap-4 group cursor-pointer">
                                     <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 group-hover:text-blue-500 transition-all">
                                         <Mail className="w-4 h-4" />
                                     </div>
                                     <span className="text-[12px] group-hover:text-white transition-all">hello@NextHire.com</span>
-                                </div>
+                                </a>
                                 <div className="flex items-center gap-4 group cursor-pointer">
                                     <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 group-hover:text-blue-500 transition-all">
                                         <Phone className="w-4 h-4" />

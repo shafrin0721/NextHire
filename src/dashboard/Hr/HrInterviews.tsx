@@ -724,10 +724,10 @@ export const HrInterviews = (): JSX.Element => {
                         </div>
                         <div className="space-y-4">
                             <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-[12px]">Contact Info</h4>
-                            <div className="flex items-center gap-4 group cursor-pointer">
+                            <a href="mailto:hello@NextHire.com?subject=Support Request" className="flex items-center gap-4 group cursor-pointer">
                                 <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 transition-all"><Mail className="w-4 h-4" /></div>
                                 <span className="text-[12px] group-hover:text-white transition-all">hello@NextHire.com</span>
-                            </div>
+                            </a>
                             <div className="flex items-center gap-4 group cursor-pointer">
                                 <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 transition-all"><Phone className="w-4 h-4" /></div>
                                 <span className="text-[12px] group-hover:text-white transition-all">+1 (555) 123-4567</span>

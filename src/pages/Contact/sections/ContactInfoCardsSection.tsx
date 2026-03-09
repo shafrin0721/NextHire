@@ -16,7 +16,7 @@ const infoCards = [
   {
     title: "Email",
     description: "Send us an email",
-    primary: "hello@nexthire.com",
+    primary: "hello@gmail.com",
     secondary: "",
     Icon: MailIcon,
   },
@@ -52,9 +52,25 @@ export const ContactInfoCardsSection = (): JSX.Element => {
                   </p>
                 </div>
                 <div className="flex flex-col gap-1.5 mt-2">
-                  <div className="[font-family:'Inter',Helvetica] font-semibold text-blue-600 transition-colors duration-300 group-hover:text-blue-700 text-base tracking-tight leading-tight">
-                    {primary}
-                  </div>
+                  {title === "Email" ? (
+                    <a
+                      href={`mailto:${primary}?subject=Customer Support Request`}
+                      className="[font-family:'Inter',Helvetica] font-semibold text-blue-600 transition-colors duration-300 group-hover:text-blue-700 text-base tracking-tight leading-tight hover:underline cursor-pointer"
+                    >
+                      {primary}
+                    </a>
+                  ) : title === "Phone" ? (
+                    <a
+                      href={`tel:${primary.replace(/\s/g, '')}`}
+                      className="[font-family:'Inter',Helvetica] font-semibold text-blue-600 transition-colors duration-300 group-hover:text-blue-700 text-base tracking-tight leading-tight hover:underline cursor-pointer"
+                    >
+                      {primary}
+                    </a>
+                  ) : (
+                    <div className="[font-family:'Inter',Helvetica] font-semibold text-blue-600 transition-colors duration-300 group-hover:text-blue-700 text-base tracking-tight leading-tight">
+                      {primary}
+                    </div>
+                  )}
                   {secondary && (
                     <div className="[font-family:'Inter',Helvetica] font-medium text-gray-800 text-sm tracking-tight leading-tight">
                       {secondary}

@@ -460,7 +460,7 @@ export const JobApplications = (): JSX.Element => {
                                                         </div>
                                                         <div>
                                                             <p className="font-bold text-gray-900 text-sm whitespace-nowrap">{app.name}</p>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{app.email}</p>
+                                                            <a href={`mailto:${app.email}?subject=Regarding Your Job Application`} className="text-[10px] text-gray-400 font-bold uppercase tracking-widest hover:text-blue-600 transition-colors block cursor-pointer">{app.email}</a>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -576,7 +576,7 @@ export const JobApplications = (): JSX.Element => {
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[2px] flex items-center gap-2">
                                         <Mail className="w-3 h-3 text-blue-500" /> Email Address
                                     </label>
-                                    <p className="font-bold text-gray-800 text-sm">{selectedCandidate.email}</p>
+                                    <a href={`mailto:${selectedCandidate.email}?subject=Regarding Your Job Application at NextHire`} className="font-bold text-gray-800 text-sm hover:text-blue-600 transition-colors cursor-pointer">{selectedCandidate.email}</a>
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[2px] flex items-center gap-2">
@@ -968,12 +968,12 @@ export const JobApplications = (): JSX.Element => {
                         <div className="space-y-6">
                             <h4 className="text-white font-bold text-lg mb-6 uppercase tracking-widest text-[12px]">Contact Info</h4>
                             <div className="space-y-4 text-sm font-bold">
-                                <div className="flex items-center gap-4 group cursor-pointer">
+                                <a href="mailto:hello@NextHire.com?subject=Support Request" className="flex items-center gap-4 group cursor-pointer">
                                     <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 group-hover:text-blue-500 transition-all">
                                         <Mail className="w-4 h-4" />
                                     </div>
                                     <span className="text-[12px] group-hover:text-white transition-all">hello@NextHire.com</span>
-                                </div>
+                                </a>
                                 <div className="flex items-center gap-4 group cursor-pointer">
                                     <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 group-hover:text-blue-500 transition-all">
                                         <Phone className="w-4 h-4" />
