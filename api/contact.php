@@ -53,10 +53,25 @@ try {
 
   $messageId = $pdo->lastInsertId();
 
+  // Send email notification to hello@nexthire.lk
+  $to = "hello@nexthire.lk";
+  $headers = "From: " . $email . "\r\n";
+  $headers .= "Reply-To: " . $email . "\r\n";
+  $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+  $headers .= "Content-Type: text/plain; charset=utf-8\r\n";
+
+  $emailBody = "New message from NextHire Contact Form\n\n";
+  $emailBody .= "Full Name: " . $name . "\n";
+  $emailBody .= "Email Address: " . $email . "\n";
+  $emailBody .= "Subject: " . $subject . "\n\n";
+  $emailBody .= "Message:\n" . $message . "\n";
+
+  @mail($to, "NextHire Contact: " . $subject, $emailBody, $headers);
+
   json_response(200, [
     "status" => "success",
     "success" => true,
-    "message" => "Thank you for contacting us! We'll get back to you within 24 hours.",
+    "message" => "Your message has been sent successfully. Our team will contact you soon.",
     "messageId" => (int)$messageId
   ]);
 } catch (Exception $e) {

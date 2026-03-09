@@ -50,7 +50,7 @@ export const ContactFormSection = (): JSX.Element => {
       if (response.data.success || response.data.status === "success") {
         setSuccess(true);
         setError("");
-        
+
         // Clear form
         setName("");
         setEmail("");
@@ -106,7 +106,7 @@ export const ContactFormSection = (): JSX.Element => {
               <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                 <p className="[font-family:'Inter',Helvetica] text-sm text-green-800">
-                  Thank you for contacting us! We'll get back to you within 24 hours.
+                  Your message has been sent successfully. Our team will contact you soon.
                 </p>
               </div>
             )}

@@ -10,25 +10,28 @@ const quickLinks = [
 ];
 
 const supportLinks = [
-  { label: "Help Center", to: "#" },
-  { label: "Privacy Policy", to: "#" },
-  { label: "Terms of Service", to: "#" },
+  { label: "Help Center", to: "/help" },
+  { label: "Privacy Policy", to: "/privacy" },
+  { label: "Terms of Service", to: "/terms" },
   { label: "Contact Support", to: "/contact" },
-  { label: "FAQ", to: "#" },
+  { label: "FAQ", to: "/faq" },
 ];
 
 const contactInfo = [
   {
     icon: MailIcon,
     text: "hello@nexthire.lk",
+    href: "https://mail.google.com/mail/?view=cm&fs=1&to=hello@nexthire.lk",
   },
   {
     icon: PhoneIcon,
     text: "+94 77 123 4567",
+    href: "tel:+94771234567",
   },
   {
     icon: MapPinIcon,
     text: "NextHire Pvt Ltd\nNo. 25, Galle Road\nColombo 03\nSri Lanka",
+    href: "https://www.google.com/maps/search/?api=1&query=No+25+Galle+Road+Colombo+03+Sri+Lanka",
   },
 ];
 
@@ -98,6 +101,7 @@ export const Footer = (): JSX.Element => {
               {contactInfo.map((item, index) => (
                 <div key={`contact-${index}`} className="flex gap-3">
                   <item.icon className="w-4 h-6 text-gray-400 flex-shrink-0" />
+<<<<<<< HEAD
                   {item.icon === MailIcon ? (
                     <a
                       href={`mailto:${item.text}?subject=General Inquiry`}
@@ -117,6 +121,16 @@ export const Footer = (): JSX.Element => {
                       {item.text}
                     </span>
                   )}
+=======
+                  <a
+                    href={item.href}
+                    target={item.href.startsWith("http") ? "_blank" : undefined}
+                    rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="[font-family:'Inter',Helvetica] font-normal text-gray-400 text-base tracking-[-0.50px] leading-6 whitespace-pre-line hover:text-white hover:underline transition-colors"
+                  >
+                    {item.text}
+                  </a>
+>>>>>>> 6c55d7c (Updated contact page and footer links)
                 </div>
               ))}
             </div>
