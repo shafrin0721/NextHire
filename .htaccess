@@ -1,0 +1,41 @@
+# NextHire API Rewrite Rules
+# For Apache server (XAMPP)
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /nexthire/
+    
+    # API routes
+    RewriteRule ^api/auth/login$ api/auth.php [L]
+    RewriteRule ^api/auth/logout$ api/auth.php [L]
+    RewriteRule ^api/auth/me$ api/auth.php [L]
+    
+    RewriteRule ^api/jobs$ api/jobs.php [L]
+    RewriteRule ^api/jobs/([0-9]+)$ api/jobs.php/$1 [L]
+    
+    RewriteRule ^api/applications$ api/applications.php [L]
+    RewriteRule ^api/applications/([0-9]+)$ api/applications.php/$1 [L]
+    RewriteRule ^api/applications/([A-Za-z0-9-]+)/status$ api/applications.php/$1/status [L]
+    
+    RewriteRule ^api/screening$ api/screening.php [L]
+    RewriteRule ^api/screening/([A-Za-z0-9-]+)/reveal$ api/screening.php/$1/reveal [L]
+    
+    RewriteRule ^api/tests$ api/tests.php [L]
+    RewriteRule ^api/tests/([0-9]+)$ api/tests.php/$1 [L]
+    
+    RewriteRule ^api/interviews$ api/interviews.php [L]
+    RewriteRule ^api/interviews/([0-9]+)$ api/interviews.php/$1 [L]
+    
+    RewriteRule ^api/reports$ api/reports.php [L]
+    RewriteRule ^api/dashboard$ api/reports.php/dashboard [L]
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# Protect config files
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
