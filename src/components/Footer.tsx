@@ -101,27 +101,6 @@ export const Footer = (): JSX.Element => {
               {contactInfo.map((item, index) => (
                 <div key={`contact-${index}`} className="flex gap-3">
                   <item.icon className="w-4 h-6 text-gray-400 flex-shrink-0" />
-<<<<<<< HEAD
-                  {item.icon === MailIcon ? (
-                    <a
-                      href={`mailto:${item.text}?subject=General Inquiry`}
-                      className="[font-family:'Inter',Helvetica] font-normal text-gray-400 text-base tracking-[-0.50px] leading-6 whitespace-pre-line hover:text-white transition-colors cursor-pointer"
-                    >
-                      {item.text}
-                    </a>
-                  ) : item.icon === PhoneIcon ? (
-                    <a
-                      href={`tel:${item.text.replace(/\s/g, '')}`}
-                      className="[font-family:'Inter',Helvetica] font-normal text-gray-400 text-base tracking-[-0.50px] leading-6 whitespace-pre-line hover:text-white transition-colors cursor-pointer"
-                    >
-                      {item.text}
-                    </a>
-                  ) : (
-                    <span className="[font-family:'Inter',Helvetica] font-normal text-gray-400 text-base tracking-[-0.50px] leading-6 whitespace-pre-line">
-                      {item.text}
-                    </span>
-                  )}
-=======
                   <a
                     href={item.href}
                     target={item.href.startsWith("http") ? "_blank" : undefined}
@@ -130,7 +109,6 @@ export const Footer = (): JSX.Element => {
                   >
                     {item.text}
                   </a>
->>>>>>> 6c55d7c (Updated contact page and footer links)
                 </div>
               ))}
             </div>

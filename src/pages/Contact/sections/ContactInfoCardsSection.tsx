@@ -6,33 +6,6 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "../../../components/ui/card";
 
-<<<<<<< HEAD
-const infoCards = [
-  {
-    title: "Phone",
-    description: "Give us a call",
-    primary: "+1 (555) 123-4567",
-    secondary: "",
-    Icon: PhoneIcon,
-  },
-  {
-    title: "Email",
-    description: "Send us an email",
-    primary: "hello@gmail.com",
-    secondary: "",
-    Icon: MailIcon,
-  },
-  {
-    title: "Address",
-    description: "Visit our office",
-    primary: "123 Business Ave, Suite 100",
-    secondary: "San Francisco, CA 94105",
-    Icon: MapPinIcon,
-  },
-];
-
-=======
->>>>>>> 6c55d7c (Updated contact page and footer links)
 export const ContactInfoCardsSection = (): JSX.Element => {
   return (
     <section className="bg-white -mt-16 pb-20 relative z-10">
@@ -121,37 +94,6 @@ export const ContactInfoCardsSection = (): JSX.Element => {
                     Colombo 03, Sri Lanka
                   </p>
                 </div>
-<<<<<<< HEAD
-                <div className="flex flex-col gap-1.5 mt-2">
-                  {title === "Email" ? (
-                    <a
-                      href={`mailto:${primary}?subject=Customer Support Request`}
-                      className="[font-family:'Inter',Helvetica] font-semibold text-blue-600 transition-colors duration-300 group-hover:text-blue-700 text-base tracking-tight leading-tight hover:underline cursor-pointer"
-                    >
-                      {primary}
-                    </a>
-                  ) : title === "Phone" ? (
-                    <a
-                      href={`tel:${primary.replace(/\s/g, '')}`}
-                      className="[font-family:'Inter',Helvetica] font-semibold text-blue-600 transition-colors duration-300 group-hover:text-blue-700 text-base tracking-tight leading-tight hover:underline cursor-pointer"
-                    >
-                      {primary}
-                    </a>
-                  ) : (
-                    <div className="[font-family:'Inter',Helvetica] font-semibold text-blue-600 transition-colors duration-300 group-hover:text-blue-700 text-base tracking-tight leading-tight">
-                      {primary}
-                    </div>
-                  )}
-                  {secondary && (
-                    <div className="[font-family:'Inter',Helvetica] font-medium text-gray-800 text-sm tracking-tight leading-tight">
-                      {secondary}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-=======
                 <a
                   href="https://maps.google.com/?q=NextHire+Pvt+Ltd+No+25+Galle+Road+Colombo+03+Sri+Lanka"
                   target="_blank"
@@ -177,7 +119,6 @@ export const ContactInfoCardsSection = (): JSX.Element => {
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
->>>>>>> 6c55d7c (Updated contact page and footer links)
         </div>
       </div>
     </section>
