@@ -1,9 +1,7 @@
 ﻿import {
     LayoutDashboard,
     Briefcase,
-    FileText,
     Users,
-    FileCheck,
     Calendar,
     BarChart3,
     Settings,

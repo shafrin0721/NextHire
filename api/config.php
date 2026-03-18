@@ -6,7 +6,7 @@
 
 // Database credentials (adjust these for your XAMPP setup)
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'nexthire');
+define('DB_NAME', 'nexthire_db');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
@@ -239,6 +239,6 @@ function initializeDatabase() {
     }
 }
 
-// Run database initialization
-initializeDatabase();
+// Legacy initializer kept for backward compatibility.
+// It is intentionally not auto-run because the project uses nexthire_import.sql schema.
 

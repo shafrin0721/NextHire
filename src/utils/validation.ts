@@ -8,7 +8,7 @@ export const VALIDATION_MESSAGES = {
   email: "Please enter a valid email address.",
   phone: "Please enter a valid phone number.",
   password:
-    "Password must contain at least 6 characters, one uppercase letter, and one number.",
+    "Password must contain at least 6 characters and one number.",
   startDatePast: "Start date cannot be in the past.",
   endDateBeforeStart: "End date cannot be earlier than the start date.",
 } as const;
@@ -16,7 +16,6 @@ export const VALIDATION_MESSAGES = {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_DIGITS_ONLY = /^\d+$/;
 const PASSWORD_MIN_LENGTH = 6;
-const PASSWORD_HAS_UPPERCASE = /[A-Z]/;
 const PASSWORD_HAS_NUMBER = /\d/;
 
 /** Returns today's date in YYYY-MM-DD for use as min on date inputs */
@@ -53,7 +52,6 @@ export function validatePassword(value: string | undefined | null): string | nul
   if (required) return required;
   const v = value as string;
   if (v.length < PASSWORD_MIN_LENGTH) return VALIDATION_MESSAGES.password;
-  if (!PASSWORD_HAS_UPPERCASE.test(v)) return VALIDATION_MESSAGES.password;
   if (!PASSWORD_HAS_NUMBER.test(v)) return VALIDATION_MESSAGES.password;
   return null;
 }

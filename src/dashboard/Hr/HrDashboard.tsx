@@ -40,7 +40,13 @@ export const HrDashboard = (): JSX.Element => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm [font-family:'Inter',Helvetica] font-medium px-4 py-2">
+            <button
+              type="button"
+              onClick={() =>
+                navigate("/hr/jobs", { state: { openPostJobModal: true } })
+              }
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm [font-family:'Inter',Helvetica] font-medium px-4 py-2"
+            >
               + Add Job
             </button>
             <div className="w-8 h-8 rounded-full bg-gray-200" />

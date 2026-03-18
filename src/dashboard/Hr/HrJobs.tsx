@@ -1,9 +1,7 @@
 import {
     LayoutDashboard,
     Briefcase,
-    FileText,
     Users,
-    FileCheck,
     Calendar,
     BarChart3,
     Settings,
@@ -28,7 +26,7 @@ import {
     Briefcase as BriefcaseIcon,
     X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { validateRequired, validateStartDate, getTodayDateString } from "../../utils/validation";
 
@@ -157,6 +155,14 @@ export const HrJobs = (): JSX.Element => {
     });
     const [postFormErrors, setPostFormErrors] = useState<Record<string, string>>({});
     const [editDeadlineError, setEditDeadlineError] = useState("");
+
+    useEffect(() => {
+        const shouldOpenPostModal = (location.state as { openPostJobModal?: boolean } | null)?.openPostJobModal;
+        if (shouldOpenPostModal) {
+            setPostJobModal(true);
+            navigate(location.pathname, { replace: true, state: null });
+        }
+    }, [location.pathname, location.state, navigate]);
 
     const paginatedJobs = jobList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     const totalPages = Math.max(1, Math.ceil(jobList.length / itemsPerPage));
