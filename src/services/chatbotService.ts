@@ -16,19 +16,35 @@ export interface ChatSession {
 class ChatbotService {
   private sessionId: string | null = null;
 
-  // Start a new conversation
-  async startConversation(): Promise<ChatSession> {
+  private async postAction(payload: Record<string, unknown>) {
     const response = await fetch(`${API_BASE_URL}/chatbot.php`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        action: 'start_conversation',
-      }),
+      body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
+    let data: any = null;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error('Chatbot server returned an invalid response');
+    }
+
+    if (!response.ok) {
+      throw new Error(data?.message || `Chatbot request failed (${response.status})`);
+    }
+
+    return data;
+  }
+
+  // Start a new conversation
+  async startConversation(): Promise<ChatSession> {
+    const data = await this.postAction({
+      action: 'start_conversation',
+    });
+
     if (data.status === 'success') {
       this.sessionId = data.session_id;
       localStorage.setItem('chatbot_session_id', data.session_id);
@@ -50,19 +66,29 @@ class ChatbotService {
       }
     }
 
-    const response = await fetch(`${API_BASE_URL}/chatbot.php`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    let data: any;
+    try {
+      data = await this.postAction({
         action: 'send_message',
         session_id: this.sessionId,
-        message: message,
-      }),
-    });
+        message,
+      });
+    } catch (error) {
+      // Recover automatically if a stale session ID points to a deleted conversation.
+      const messageText = error instanceof Error ? error.message : String(error);
+      if (messageText.toLowerCase().includes('conversation not found')) {
+        this.resetConversation();
+        await this.startConversation();
+        data = await this.postAction({
+          action: 'send_message',
+          session_id: this.sessionId,
+          message,
+        });
+      } else {
+        throw error;
+      }
+    }
 
-    const data = await response.json();
     if (data.status === 'success') {
       return {
         sender_type: 'bot',
@@ -82,18 +108,21 @@ class ChatbotService {
       }
     }
 
-    const response = await fetch(`${API_BASE_URL}/chatbot.php`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    let data: any;
+    try {
+      data = await this.postAction({
         action: 'get_conversation',
         session_id: this.sessionId,
-      }),
-    });
+      });
+    } catch (error) {
+      const messageText = error instanceof Error ? error.message : String(error);
+      if (messageText.toLowerCase().includes('conversation not found')) {
+        this.resetConversation();
+        return [];
+      }
+      throw error;
+    }
 
-    const data = await response.json();
     if (data.status === 'success') {
       return data.messages;
     }
