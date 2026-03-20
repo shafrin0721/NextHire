@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /NextHire/api/
+    
+    # Allow direct access to .php files and actual files/directories
+    RewriteCond %{REQUEST_FILENAME} \.php$ [OR]
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # Route unmatched requests to index.php
+    RewriteRule ^(.*)$ index.php/$1 [QSA,L]
+</IfModule>
