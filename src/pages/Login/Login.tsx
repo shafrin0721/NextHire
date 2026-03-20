@@ -7,8 +7,6 @@ import { FcGoogle } from "react-icons/fc";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Navbar } from "../../components/Navbar";
-import { Footer } from "../../components/Footer";
 import { validateEmail, validatePassword } from "../../utils/validation";
 import { loginUser } from "../../utils/auth";
 
@@ -69,7 +67,8 @@ export const Login = (): JSX.Element => {
             } else if (result.user?.role === "hr") {
                 navigate("/hr/dashboard");
             } else {
-                navigate("/jobs");
+                // Candidate should go straight to their dashboard
+                navigate("/candidate/dashboard");
             }
         } catch (error) {
             setAuthError("An unexpected error occurred. Please try again.");
@@ -79,9 +78,7 @@ export const Login = (): JSX.Element => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-white">
-            <Navbar />
-
+        <div className="bg-white">
             <main className="flex-grow flex items-center justify-center py-12 px-4 shadow-sm">
                 <div className="w-full max-w-[715px] bg-white rounded-3xl border border-gray-100 shadow-[0px_20px_50px_rgba(37,99,235,0.08)] overflow-hidden">
                     <div className="flex flex-col items-center justify-center gap-12 py-16 px-8 md:px-16">
@@ -221,8 +218,6 @@ export const Login = (): JSX.Element => {
                     </div>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 };

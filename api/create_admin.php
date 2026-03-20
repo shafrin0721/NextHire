@@ -1,7 +1,8 @@
 <?php
 /**
- * Create admin user for NextHire
- * Visit: http://localhost/NextHire/api/create_admin.php
+ * Create/Update NextHire Admin User (Test@123)
+ * Visit: http://localhost/api/create_admin.php
+ * Credentials: admin@nexthire.com / Test@123 | hr@nexthire.com / Test@123 | candidate@nexthire.com / Test@123
  */
 
 declare(strict_types=1);
@@ -9,7 +10,7 @@ declare(strict_types=1);
 require __DIR__ . "/config/db.php";
 
 $adminEmail = "admin@nexthire.com";
-$adminPassword = "Admin@123";
+$adminPassword = "Test@123";
 $adminName = "Admin User";
 
 try {

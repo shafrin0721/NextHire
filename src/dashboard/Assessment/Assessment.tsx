@@ -1,6 +1,3 @@
-import { Navbar } from "../../components/Navbar";
-import { Footer } from "../../components/Footer";
-
 const questionOptions = [
   "Using this.setState() method",
   "Using useState hook with setter function",
@@ -11,8 +8,6 @@ const questionOptions = [
 export const Assessment = (): JSX.Element => {
   return (
     <div className="flex flex-col w-full bg-white min-h-screen">
-      <Navbar />
-
       <main className="flex-1 bg-white">
         <section className="border-b border-gray-100">
           <div className="container mx-auto px-4 max-w-[1120px] py-6 flex flex-col gap-4">
@@ -169,8 +164,6 @@ export const Assessment = (): JSX.Element => {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 };
