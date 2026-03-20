@@ -1,6 +1,4 @@
 import { useParams } from "react-router-dom";
-import { Navbar } from "../../components/Navbar";
-import { Footer } from "../../components/Footer";
 import { JobDetailsMainSection } from "./sections/JobDetailsMainSection";
 import { SimilarJobsSection } from "./sections/SimilarJobsSection";
 import { getJobById } from "../../services/data/jobs";
@@ -13,8 +11,7 @@ export const JobDetails = (): JSX.Element => {
 
   if (!job) {
     return (
-      <div className="flex flex-col w-full bg-white min-h-screen">
-        <Navbar />
+      <div className="flex flex-col w-full bg-white">
         <main className="flex-grow flex flex-col items-center justify-center px-4 py-16">
           <h1 className="[font-family:'Inter',Helvetica] font-semibold text-gray-900 text-xl mb-2">
             Job not found
@@ -24,17 +21,14 @@ export const JobDetails = (): JSX.Element => {
             <Link to="/jobs">Browse jobs</Link>
           </Button>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col w-full bg-white">
-      <Navbar />
       <JobDetailsMainSection job={job} />
       <SimilarJobsSection currentJobId={job.id} />
-      <Footer />
     </div>
   );
 };

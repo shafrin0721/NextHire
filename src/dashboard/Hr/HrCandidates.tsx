@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { HrFooter } from "../../components/HrFooter";
 
 const sidebarItems = [
     { label: "Dashboard", icon: LayoutDashboard, path: "/hr/dashboard" },
@@ -799,81 +800,8 @@ export const HrCandidates = (): JSX.Element => {
                 </div>
             )}
 
-            {/* Sub-Footer */}
-            <footer className="bg-[#0B1221] text-gray-400 pt-16 pb-8 border-t border-gray-800">
-                <div className="max-w-[1280px] mx-auto px-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-2">
-                                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/40">
-                                    <Briefcase className="w-6 h-6" />
-                                </div>
-                                <span className="font-bold text-2xl text-white tracking-tight">NextHire</span>
-                            </div>
-                            <p className="text-sm leading-relaxed text-gray-400 font-medium">
-                                Your gateway to amazing career opportunities. Connect with top employers and find your dream job today.
-                            </p>
-                            <div className="flex gap-3 pt-2">
-                                {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                                    <button key={i} className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                                        <Icon className="w-5 h-5" />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 className="text-white font-bold text-lg mb-6 uppercase tracking-widest text-[12px]">Quick Links</h4>
-                            <ul className="space-y-4 text-sm font-bold">
-                                {["Browse Jobs", "Post a Job", "Companies", "Candidates", "Resources"].map(link => (
-                                    <li key={link}><Link to="#" className="hover:text-blue-500 transition-colors uppercase tracking-tight text-[11px]">{link}</Link></li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4 className="text-white font-bold text-lg mb-6 uppercase tracking-widest text-[12px]">Support</h4>
-                            <ul className="space-y-4 text-sm font-bold">
-                                {["Help Center", "Privacy Policy", "Terms of Service", "Contact Support", "FAQ"].map(link => (
-                                    <li key={link}><Link to="#" className="hover:text-blue-500 transition-colors uppercase tracking-tight text-[11px]">{link}</Link></li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="space-y-6">
-                            <h4 className="text-white font-bold text-lg mb-6 uppercase tracking-widest text-[12px]">Contact Info</h4>
-                            <div className="space-y-4 text-sm font-bold">
-                                <div className="flex items-center gap-4 group cursor-pointer">
-                                    <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 group-hover:text-blue-500 transition-all">
-                                        <Mail className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-[12px] group-hover:text-white transition-all">hello@NextHire.com</span>
-                                </div>
-                                <div className="flex items-center gap-4 group cursor-pointer">
-                                    <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 group-hover:text-blue-500 transition-all">
-                                        <Phone className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-[12px] group-hover:text-white transition-all">+1 (555) 123-4567</span>
-                                </div>
-                                <div className="flex items-start gap-4 group cursor-pointer">
-                                    <div className="p-2.5 rounded-lg bg-gray-800 group-hover:bg-blue-600/10 group-hover:text-blue-500 transition-all shrink-0">
-                                        <MapPin className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-[12px] group-hover:text-white transition-all leading-relaxed">
-                                        123 Business Ave, Suite 100<br />San Francisco, CA 94105
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="pt-8 border-t border-gray-800 text-center">
-                        <p className="text-[11px] font-bold uppercase tracking-[2px] text-gray-600">
-                            © 2024 NextHire. All rights reserved.
-                        </p>
-                    </div>
-                </div>
-            </footer>
+            {/* HR footer (single source of truth) */}
+            <HrFooter />
         </div>
     );
 };

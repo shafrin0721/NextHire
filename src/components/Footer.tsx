@@ -1,5 +1,6 @@
-import { Mail as MailIcon, MapPin as MapPinIcon, Phone as PhoneIcon } from "lucide-react";
+import { getCurrentUser } from "../utils/auth";
 import { Link } from "react-router-dom";
+import { Mail as MailIcon, MapPin as MapPinIcon, Phone as PhoneIcon } from "lucide-react";
 
 const quickLinks = [
   { label: "Home", to: "/" },
@@ -11,31 +12,22 @@ const quickLinks = [
 const accountLinks = [
   { label: "Login", to: "/login" },
   { label: "Sign Up", to: "/signup" },
-  { label: "Jobs Dashboard", to: "/dashboard" },
+  { label: "Jobs Dashboard", to: "/jobs" },
 ];
 
 const companyLinks = [
-  { label: "Post a Job", to: "/post-job" },
-  { label: "HR Dashboard", to: "/hr-dashboard" },
-  { label: "Contact Support", to: "/contact" },
-];
-
-const contactInfo = [
-  {
-    icon: MailIcon,
-    text: "hello@nexthire.lk",
-  },
-  {
-    icon: PhoneIcon,
-    text: "+94 77 123 4567",
-  },
-  {
-    icon: MapPinIcon,
-    text: "No. 25, Galle Road\nColombo 03\nSri Lanka",
-  },
+  { label: "Post a Job", to: "/dashboard/hr/jobs" },
+  { label: "HR Dashboard", to: "/dashboard/hr" },
 ];
 
 export const Footer = (): JSX.Element => {
+  const user = getCurrentUser();
+  const role = (user?.role ?? "").toLowerCase();
+  const isHrOrAdmin = user && (role === "hr" || role === "admin");
+  if (isHrOrAdmin) {
+    return <></>;
+  };
+
   return (
     <footer className="bg-gradient-to-r from-gray-900 to-black text-white">
       {/* Top section */}
@@ -47,7 +39,7 @@ export const Footer = (): JSX.Element => {
               <img
                 className="h-12 w-auto"
                 alt="NextHire"
-src="/nexthire-logo.png"
+                src="/nexthire-logo.png"
               />
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed max-w-md">
@@ -76,7 +68,7 @@ src="/nexthire-logo.png"
 
           {/* Account */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">For Candidates</h3>
+            <h3 className="text-lg font-semibold mb-6">Account</h3>
             <ul className="space-y-3">
               {accountLinks.map((link, index) => (
                 <li key={index}>
@@ -94,17 +86,18 @@ src="/nexthire-logo.png"
 
           {/* Company */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">For Companies</h3>
+            <h3 className="text-lg font-semibold mb-3">For Companies</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              This is only for the HR and the Admin.
+            </p>
             <ul className="space-y-3">
               {companyLinks.map((link, index) => (
                 <li key={index}>
-                  <Link
-                    to={link.to}
-                    className="text-gray-400 hover:text-white transition-colors text-sm group"
-                  >
+                  {/* Intentionally not navigable for candidates */}
+                  <span className="text-sm group cursor-not-allowed transition-colors text-gray-500">
                     {link.label}
-                    <span className="block h-0.5 bg-blue-500 w-0 group-hover:w-4 transition-all duration-300" />
-                  </Link>
+                    <span className="block h-0.5 bg-emerald-500 w-0 group-hover:w-4 transition-all duration-300" />
+                  </span>
                 </li>
               ))}
             </ul>

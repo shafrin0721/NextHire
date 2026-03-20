@@ -4,12 +4,14 @@ declare(strict_types=1);
 header("Content-Type: application/json; charset=UTF-8");
 
 $allowedOrigins = [
+  "http://localhost",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
   "http://localhost:5176",
   "http://localhost:3000",
   "http://localhost:4173",
+  "http://127.0.0.1:5174",
 ];
 
 $origin = $_SERVER["HTTP_ORIGIN"] ?? "";

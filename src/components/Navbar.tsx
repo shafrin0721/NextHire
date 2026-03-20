@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getCurrentUser, isAuthenticated, clearAuthSession } from "../utils/auth";
 
 const navigationItems = [
   { label: "Home", to: "/" },
@@ -13,6 +14,19 @@ export const Navbar = (): JSX.Element => {
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage = location.pathname === "/";
+  const currentUser = getCurrentUser();
+  const userRole = (currentUser?.role ?? "").toLowerCase();
+  const handleLogout = () => {
+    clearAuthSession();
+    navigate('/');
+  };
+
+  const dashboardPath = userRole === 'hr' ? '/hr/dashboard' : userRole === 'admin' ? '/admin/dashboard' : '/candidate/dashboard';
+  
+  // HR/Admin dashboards already have their own dedicated headers/sidebar.
+  if (userRole === 'hr' || userRole === 'admin') {
+    return <></>;
+  }
 
   return (
     <header className="w-full bg-white shadow-[0px_1px_2px_#0000000d] sticky top-0 z-50">
@@ -67,19 +81,43 @@ export const Navbar = (): JSX.Element => {
 
           {/* Actions - Right */}
           <div className="flex items-center gap-2">
-            <Button
-              asChild
-              variant="ghost"
-              className="text-sm font-semibold text-blue-600 hover:text-blue-700 hidden md:flex px-4 py-2 border border-blue-200 hover:border-blue-300 rounded-lg h-auto"
-            >
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button
-              asChild
-              className="font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-200 h-auto ml-1 border-0"
-            >
-              <Link to="/signup">Get Started</Link>
-            </Button>
+            {isAuthenticated() ? (
+              <div className="flex items-center gap-2">
+                <div className="flex gap-2">
+                  <Link
+                    to={dashboardPath}
+                    className="text-sm font-semibold text-blue-600 hover:text-blue-700 px-4 py-2 border border-blue-200 hover:border-blue-300 rounded-lg bg-blue-50 hover:bg-blue-50 transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/candidate/profile"
+                    className="text-sm font-semibold text-gray-700 hover:text-gray-900 px-3 py-2 border border-gray-200 hover:border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Profile
+                  </Link>
+                </div>
+                <Button variant="ghost" size="sm" className="h-auto py-2 px-3" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="text-sm font-semibold text-blue-600 hover:text-blue-700 hidden md:flex px-4 py-2 border border-blue-200 hover:border-blue-300 rounded-lg h-auto"
+                >
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-200 h-auto ml-1 border-0"
+                >
+                  <Link to="/signup">Get Started</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

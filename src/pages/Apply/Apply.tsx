@@ -1,7 +1,5 @@
 import { type FormEvent, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Navbar } from "../../components/Navbar";
-import { Footer } from "../../components/Footer";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -49,8 +47,7 @@ export const Apply = (): JSX.Element => {
 
   if (!job) {
     return (
-      <div className="flex flex-col w-full bg-white min-h-screen">
-        <Navbar />
+      <div className="flex flex-col w-full bg-white">
         <main className="flex-grow flex flex-col items-center justify-center px-4 py-16">
           <h1 className="[font-family:'Inter',Helvetica] font-semibold text-gray-900 text-xl mb-2">
             Job not found
@@ -60,15 +57,13 @@ export const Apply = (): JSX.Element => {
             Browse jobs
           </Button>
         </main>
-        <Footer />
       </div>
     );
   }
 
   if (submitted) {
     return (
-      <div className="flex flex-col w-full bg-white min-h-screen">
-        <Navbar />
+      <div className="flex flex-col w-full bg-white">
         <main className="flex-grow flex flex-col items-center justify-center px-4 py-16">
           <div className="max-w-md text-center">
             <h1 className="[font-family:'Inter',Helvetica] font-semibold text-gray-900 text-2xl mb-2">
@@ -82,14 +77,12 @@ export const Apply = (): JSX.Element => {
             </Button>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col w-full bg-white min-h-screen">
-      <Navbar />
+    <div className="flex flex-col w-full bg-white">
       <main className="flex-grow bg-gray-50 py-10 md:py-14">
         <div className="container mx-auto px-4 max-w-[560px]">
           <div className="mb-8">
@@ -187,7 +180,6 @@ export const Apply = (): JSX.Element => {
           </form>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

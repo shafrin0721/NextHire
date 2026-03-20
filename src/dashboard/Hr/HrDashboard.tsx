@@ -8,7 +8,8 @@ import {
   LogOutIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Footer } from "../../components/Footer";
+import { Button } from "../../components/ui/button";
+
 
 const sidebarItems = [
   { label: "Dashboard", Icon: BarChart3Icon, path: "/hr/dashboard" },
@@ -40,15 +41,14 @@ export const HrDashboard = (): JSX.Element => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/hr/jobs", { state: { openPostJobModal: true } })
-              }
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm [font-family:'Inter',Helvetica] font-medium px-4 py-2"
-            >
-              + Add Job
-            </button>
+              <Button
+                onClick={() =>
+                  navigate("/hr/jobs")
+                }
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs md:text-sm [font-family:'Inter',Helvetica] font-medium px-4 py-2"
+              >
+                + Add Job
+              </Button>
             <div className="w-8 h-8 rounded-full bg-gray-200" />
           </div>
         </div>
@@ -139,9 +139,29 @@ export const HrDashboard = (): JSX.Element => {
                   Last 6 months
                 </span>
               </div>
-              <div className="h-52 rounded-xl bg-gradient-to-tr from-blue-50 via-blue-100 to-blue-50 border border-dashed border-blue-200 flex items-center justify-center text-xs text-blue-400 [font-family:'Inter',Helvetica]">
-                Chart placeholder
-              </div>
+
+              <svg viewBox="0 0 400 200" className="w-full h-full">
+                <defs>
+                  <linearGradient id="trendGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3B82F6" />
+                    <stop offset="50%" stopColor="#1D4ED8" />
+                    <stop offset="100%" stopColor="#1E40AF" />
+                  </linearGradient>
+                </defs>
+                <rect x="0" y="0" width="400" height="200" fill="#F8FAFC" rx="12" />
+                <path d="M 20 180 Q 80 140 140 110 Q 200 80 260 90 Q 320 85 360 110 L 380 190 L 20 190 Z" fill="url(#trendGradient)" opacity="0.8" />
+                <circle cx="80" cy="140" r="4" fill="#3B82F6" />
+                <circle cx="140" cy="110" r="4" fill="#3B82F6" />
+                <circle cx="200" cy="80" r="4" fill="#3B82F6" />
+                <circle cx="260" cy="90" r="4" fill="#3B82F6" />
+                <circle cx="320" cy="85" r="4" fill="#3B82F6" />
+                <circle cx="360" cy="110" r="4" fill="#3B82F6" />
+                <text x="20" y="30" fontFamily="'Inter', sans-serif" fontSize="14" fontWeight="bold" fill="#1E293B">Applications</text>
+                <text x="20" y="50" fontFamily="'Inter', sans-serif" fontSize="12" fill="#64748B">Last 6 months</text>
+                <line x1="20" y1="70" x2="380" y2="70" stroke="#E2E8F0" strokeWidth="1" />
+                <text x="300" y="65" fontFamily="'Inter', sans-serif" fontSize="11" fill="#64748B">↑ 28% growth</text>
+              </svg>
+
             </div>
 
             <div className="rounded-2xl bg-white border border-gray-100 shadow-[0_10px_30px_rgba(15,23,42,0.06)] p-5 flex flex-col gap-4">
@@ -172,38 +192,36 @@ export const HrDashboard = (): JSX.Element => {
                 <h2 className="[font-family:'Inter',Helvetica] font-medium text-gray-900 text-sm md:text-base">
                   Top Performing Jobs
                 </h2>
-                <button className="[font-family:'Inter',Helvetica] text-xs text-blue-600 hover:underline">
-                  View All
-                </button>
+            <Button variant="link" className="p-0 h-auto [font-family:'Inter',Helvetica] text-xs text-blue-600 hover:underline" asChild>
+                  <span>View All</span>
+                </Button>
               </div>
-              <div className="h-40 flex items-end gap-3">
-                {["Senior Developer", "UX/UI Designer", "Data Analyst", "Project Manager", "Design Engr."].map(
-                  (label, index) => {
-                    const heights = [90, 75, 70, 65, 55];
-                    const colors = [
-                      "bg-blue-500",
-                      "bg-emerald-500",
-                      "bg-amber-500",
-                      "bg-sky-500",
-                      "bg-violet-500",
-                    ];
-                    return (
-                      <div
-                        key={label}
-                        className="flex flex-col items-center justify-end flex-1"
-                      >
-                        <div
-                          className={`${colors[index]} w-7 rounded-t-md`}
-                          style={{ height: `${heights[index]}%` }}
-                        />
-                        <span className="mt-2 text-[10px] text-gray-500 text-center [font-family:'Inter',Helvetica]">
-                          {label}
-                        </span>
-                      </div>
-                    );
-                  },
-                )}
-              </div>
+
+              <svg viewBox="0 0 400 160" className="w-full h-full">
+                <rect x="0" y="0" width="400" height="160" fill="#F8FAFC" rx="8" />
+                <g fill="none">
+                  <rect x="20" y="100" width="36" height="60" rx="4" fill="#3B82F6" />
+                  <rect x="80" y="84" width="36" height="76" rx="4" fill="#10B981" />
+                  <rect x="140" y="88" width="36" height="72" rx="4" fill="#F59E0B" />
+                  <rect x="200" y="92" width="36" height="68" rx="4" fill="#0EA5E9" />
+                  <rect x="260" y="96" width="36" height="64" rx="4" fill="#8B5CF6" />
+                </g>
+                <g fontFamily="'Inter', sans-serif" fontSize="11" fontWeight="600" fill="#475569">
+                  <text x="34" y="135">124</text>
+                  <text x="94" y="135">89</text>
+                  <text x="154" y="135">67</text>
+                  <text x="214" y="135">52</text>
+                  <text x="274" y="135">38</text>
+                </g>
+                <g fontFamily="'Inter', sans-serif" fontSize="10" fill="#94A3B8">
+                  <text x="38" y="155" textAnchor="middle">Senior Dev</text>
+                  <text x="98" y="155" textAnchor="middle">UX/UI</text>
+                  <text x="158" y="155" textAnchor="middle">Data</text>
+                  <text x="218" y="155" textAnchor="middle">PM</text>
+                  <text x="278" y="155" textAnchor="middle">Design</text>
+                </g>
+              </svg>
+
             </div>
 
             <div className="rounded-2xl bg-white border border-gray-100 shadow-[0_10px_30px_rgba(15,23,42,0.06)] p-5 flex flex-col gap-4">
@@ -242,11 +260,12 @@ export const HrDashboard = (): JSX.Element => {
           </div>
         </section>
       </main>
-
-      <Footer />
+      <HrFooter />
     </div>
   );
 };
+
+import { HrFooter } from "../../components/HrFooter";
 
 type SummaryCardProps = {
   label: string;

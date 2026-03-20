@@ -5,7 +5,7 @@
 
 const AUTH_KEY = "nexthire_auth";
 const USER_KEY = "nexthire_user";
-const API_BASE = "http://localhost/NextHire/api";
+const API_BASE = "http://localhost/next hire web app/api";
 
 export interface User {
   id: number;

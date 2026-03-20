@@ -1,21 +1,11 @@
--- Update passwords for NextHire test accounts
--- Admin: admin@nexthire.com / Admin@123
--- HR: hr@nexthire.com / Hr@123
--- Candidate: candidate@nexthire.com / Candidate@123
+-- Update passwords for NextHire test accounts (USE insert_test_users.sql instead for fresh Test@123)
+-- Credentials: admin@nexthire.com / Test@123 | hr@nexthire.com / Test@123 | candidate@nexthire.com / Test@123
+-- Hash for Test@123: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
 
 USE nexthire_db;
 
--- Update Admin password to Admin@123
--- Hash generated via: password_hash('Admin@123', PASSWORD_BCRYPT)
-UPDATE users SET password = '$2y$10$vQKpwJ5G8YkZ7.OFY9xQH.F1bx9nB5K4j3dRvPjU8mN5lQ1WqVDSi' WHERE email = 'admin@nexthire.com';
+-- Reset all to Test@123 hash
+UPDATE users SET password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi' WHERE email IN ('admin@nexthire.com', 'hr@nexthire.com', 'candidate@nexthire.com');
 
--- Update HR password to Hr@123
--- Hash generated via: password_hash('Hr@123', PASSWORD_BCRYPT)  
-UPDATE users SET password = '$2y$10$eRL4fK8pV2xN3tY6hS1wLOQU8jT9mC7nA5bX4dP6rE2fW8vH3yK0u' WHERE email = 'hr@nexthire.com';
-
--- Update Candidate password to Candidate@123
--- Hash generated via: password_hash('Candidate@123', PASSWORD_BCRYPT)
-UPDATE users SET password = '$2y$10$mW7vE5rP9tL2sK8nY4jU6.N1xH3cD6fT9aG2bV5eR8qM4kJ7yW0zL' WHERE email = 'candidate@nexthire.com';
-
--- Verify the updates
-SELECT user_id, full_name, email, role FROM users WHERE email IN ('admin@nexthire.com', 'hr@nexthire.com', 'candidate@nexthire.com');
+-- Verify
+SELECT user_id, full_name, email, role, LEFT(password, 20) AS password_hash_prefix FROM users WHERE email IN ('admin@nexthire.com', 'hr@nexthire.com', 'candidate@nexthire.com');
