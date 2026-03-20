@@ -54,14 +54,12 @@ export const Login = (): JSX.Element => {
             
             if (!result.success) {
                 setAuthError(result.message);
-                setIsLoading(false);
                 return;
             }
 
             // Check if user role matches selected role
             if (result.user && result.user.role !== role) {
                 setAuthError(`This account is not registered as ${role}. Please select "${result.user.role}" from the dropdown.`);
-                setIsLoading(false);
                 return;
             }
 
@@ -75,6 +73,7 @@ export const Login = (): JSX.Element => {
             }
         } catch (error) {
             setAuthError("An unexpected error occurred. Please try again.");
+        } finally {
             setIsLoading(false);
         }
     };

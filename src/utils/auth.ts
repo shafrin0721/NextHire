@@ -5,7 +5,7 @@
 
 const AUTH_KEY = "nexthire_auth";
 const USER_KEY = "nexthire_user";
-const API_BASE = "http://localhost/NextHire/api";
+const API_BASE = "/api";
 
 export interface User {
   id: number;
@@ -62,17 +62,40 @@ export async function loginUser(
   email: string,
   password: string,
 ): Promise<LoginResponse> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // Increased to 30 seconds
+
   try {
-    const response = await fetch(`${API_BASE}/login.php`, {
+    // Try the main API endpoint first
+    let endpoint = `${API_BASE}/login.php`;
+    
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
       credentials: "include", // Important for session cookies
+      signal: controller.signal,
     });
 
-    const data = await response.json();
+    let data: any = null;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
+      return {
+        success: false,
+        message: "Server returned an invalid response. Check that Apache is running.",
+      };
+    }
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: data?.message || `Login failed (HTTP ${response.status})`,
+      };
+    }
 
     if (data.success && data.user) {
       // Store user data in localStorage
@@ -90,10 +113,20 @@ export async function loginUser(
     };
   } catch (error) {
     console.error("Login error:", error);
+
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return {
+        success: false,
+        message: "Login timed out. Make sure Apache and MySQL are running.",
+      };
+    }
+
     return {
       success: false,
-      message: "Unable to connect to server. Please ensure XAMPP Apache is running.",
+      message: `Can't reach API. Start Apache/MySQL in XAMPP: http://127.0.0.1:8081/NextHire/api/login.php`,
     };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

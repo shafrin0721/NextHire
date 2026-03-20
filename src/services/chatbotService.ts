@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost/NextHire/api';
+const API_BASE_URL = '/NextHire/api';
 
 export interface ChatMessage {
   message_id?: number;

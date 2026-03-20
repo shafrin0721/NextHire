@@ -10,14 +10,20 @@ $allowedOrigins = [
   "http://localhost:5176",
   "http://localhost:3000",
   "http://localhost:4173",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+  "http://127.0.0.1:5175",
+  "http://127.0.0.1:5176",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:4173",
 ];
 
 $origin = $_SERVER["HTTP_ORIGIN"] ?? "";
 if (in_array($origin, $allowedOrigins, true)) {
   header("Access-Control-Allow-Origin: " . $origin);
 } else if ($origin !== "") {
-  // For development, allow localhost origins
-  if (preg_match('/^http:\/\/localhost(:\d+)?$/', $origin)) {
+  // For development, allow localhost and 127.0.0.1 origins with any port
+  if (preg_match('/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/', $origin)) {
     header("Access-Control-Allow-Origin: " . $origin);
   }
 }
