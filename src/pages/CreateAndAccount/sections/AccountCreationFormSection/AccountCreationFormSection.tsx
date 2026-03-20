@@ -83,7 +83,7 @@ export const AccountCreationFormSection = (): JSX.Element => {
 
     try {
       // Call signup API
-      const response = await fetch("http://localhost/NextHire/api/signup.php", {
+      const response = await fetch("/api/signup.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
