@@ -3,6 +3,12 @@ import { ArrowRight, Users, Briefcase, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const JoinTeamSection = (): JSX.Element => {
+  const scrollToAbout = () => {
+    const element = document.getElementById("about-home");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   return (
     <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 py-24 relative overflow-hidden">
       {/* Animated background elements */}
@@ -65,10 +71,11 @@ export const JoinTeamSection = (): JSX.Element => {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
-          <Button asChild className="bg-transparent border-2 border-blue-300 text-white hover:bg-white/10 h-14 px-8 rounded-xl [font-family:'Inter',Helvetica] font-semibold text-lg tracking-[-0.50px] hover:scale-105 transition-all duration-300">
-            <Link to="/about">
-              Learn More
-            </Link>
+          <Button 
+            onClick={scrollToAbout}
+            className="bg-transparent border-2 border-blue-300 text-white hover:bg-white/10 h-14 px-8 rounded-xl font-semibold text-lg hover:scale-105 transition-all duration-300"
+          >
+            Learn More
           </Button>
         </div>
       </div>
@@ -89,4 +96,3 @@ export const JoinTeamSection = (): JSX.Element => {
     </section>
   );
 };
-

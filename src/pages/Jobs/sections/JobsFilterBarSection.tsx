@@ -29,4 +29,3 @@ export const JobsFilterBarSection = (): JSX.Element => {
     </section>
   );
 };
-

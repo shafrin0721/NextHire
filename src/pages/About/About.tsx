@@ -7,7 +7,9 @@ import { JoinTeamSection } from "./sections/JoinTeamSection";
 export const About = (): JSX.Element => {
   return (
     <>
-      <AboutHeroSection />
+      <div id="about-home">
+        <AboutHeroSection />
+      </div>
       <MissionVisionSection />
       <TeamSection />
       <CoreValuesSection />
@@ -15,4 +17,3 @@ export const About = (): JSX.Element => {
     </>
   );
 };
-
